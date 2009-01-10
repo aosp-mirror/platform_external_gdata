@@ -74,7 +74,11 @@ public class XmlCalendarsGDataParser extends XmlGDataParser {
             } else if ("freebusy".equals(accesslevelStr)) {
                 accesslevel = CalendarEntry.ACCESS_FREEBUSY;
             } else if ("contributor".equals(accesslevelStr)) {
-                accesslevel = CalendarEntry.ACCESS_CONTRIBUTOR;
+                // contributor is the access level that used to be used, but it seems to have
+                // been deprecated in favor of "editor".
+                accesslevel = CalendarEntry.ACCESS_EDITOR;
+            } else if ("editor".equals(accesslevelStr)) {
+                accesslevel = CalendarEntry.ACCESS_EDITOR;
             } else if ("owner".equals(accesslevelStr)) {
                 accesslevel = CalendarEntry.ACCESS_OWNER;
             }

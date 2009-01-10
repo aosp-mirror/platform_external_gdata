@@ -27,10 +27,9 @@ public class CalendarEntry extends Entry {
     public static final byte ACCESS_FREEBUSY = 2;
     
     /**
-     * Access level constant indicating the user can contribute (read and write) 
-     * to this calendar.
+     * Access level constant indicating the user can edit this calendar.
      */
-    public static final byte ACCESS_CONTRIBUTOR = 3;
+    public static final byte ACCESS_EDITOR = 3;
     
     /**
      * Access level constant indicating the user owns this calendar.
