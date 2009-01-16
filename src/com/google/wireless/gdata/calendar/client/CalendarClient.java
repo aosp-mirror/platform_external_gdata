@@ -3,13 +3,11 @@
 package com.google.wireless.gdata.calendar.client;
 
 import com.google.wireless.gdata.calendar.data.CalendarEntry;
-import com.google.wireless.gdata.client.AuthenticationException;
 import com.google.wireless.gdata.client.GDataClient;
 import com.google.wireless.gdata.client.GDataParserFactory;
 import com.google.wireless.gdata.client.GDataServiceClient;
 import com.google.wireless.gdata.client.HttpException;
 import com.google.wireless.gdata.client.QueryParams;
-import com.google.wireless.gdata.client.AllDeletedUnavailableException;
 import com.google.wireless.gdata.parser.GDataParser;
 import com.google.wireless.gdata.parser.ParseException;
 
@@ -90,15 +88,9 @@ public class CalendarClient extends GDataServiceClient {
      * @throws ParseException Thrown if the feed could not be fetched.
      */
     public GDataParser getParserForUserCalendars(String feedUrl, String authToken)
-            throws AuthenticationException, ParseException, IOException,
-            AllDeletedUnavailableException {
+            throws ParseException, IOException, HttpException {
         GDataClient gDataClient = getGDataClient();
-        try {
-            InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken);
-            return getGDataParserFactory().createParser(CalendarEntry.class, is);
-        } catch (HttpException e) {
-            convertHttpExceptionForReads("Could not fetch calendars feed", e);
-            return null; // never reached            
-        }
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken);
+        return getGDataParserFactory().createParser(CalendarEntry.class, is);
     }
 }
