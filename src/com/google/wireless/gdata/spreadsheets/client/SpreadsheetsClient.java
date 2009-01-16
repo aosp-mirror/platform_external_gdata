@@ -1,13 +1,10 @@
 // Copyright 2007 The Android Open Source Project
 package com.google.wireless.gdata.spreadsheets.client;
 
-import com.google.wireless.gdata.ConflictDetectedException;
-import com.google.wireless.gdata.client.AuthenticationException;
 import com.google.wireless.gdata.client.GDataClient;
 import com.google.wireless.gdata.client.GDataParserFactory;
 import com.google.wireless.gdata.client.GDataServiceClient;
 import com.google.wireless.gdata.client.HttpException;
-import com.google.wireless.gdata.client.AllDeletedUnavailableException;
 import com.google.wireless.gdata.data.Entry;
 import com.google.wireless.gdata.data.StringUtils;
 import com.google.wireless.gdata.parser.GDataParser;
@@ -84,44 +81,29 @@ public class SpreadsheetsClient extends GDataServiceClient {
      *   method figure out which parser to create.
      * @param feedUri the URI of the feed to be fetched and parsed
      * @param authToken the current authToken to use for the request @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
     private GDataParser getParserForTypedFeed(Class feedEntryClass, String feedUri,
-            String authToken) throws AuthenticationException,
-            ParseException, IOException, AllDeletedUnavailableException {
+            String authToken) throws ParseException, IOException, HttpException {
         GDataClient gDataClient = getGDataClient();
         GDataParserFactory gDataParserFactory = getGDataParserFactory();
 
-        try {
-            InputStream is = gDataClient.getFeedAsStream(feedUri, authToken);
-            return gDataParserFactory.createParser(feedEntryClass, is);
-        } catch (HttpException e) {
-            convertHttpExceptionForReads("Could not fetch parser feed.", e);
-            return null; // never reached
-        }
+        InputStream is = gDataClient.getFeedAsStream(feedUri, authToken);
+        return gDataParserFactory.createParser(feedEntryClass, is);
     }
 
     /* (non-javadoc)
      * @see GDataServiceClient#createEntry
      */
     public Entry createEntry(String feedUri, String authToken, Entry entry)
-            throws AuthenticationException, ConflictDetectedException,
-                   ParseException, IOException {
+            throws ParseException, IOException, HttpException {
 
         GDataParserFactory factory = getGDataParserFactory();
         GDataSerializer serializer = factory.createSerializer(entry);
 
-        InputStream is;
-        try {
-            is = getGDataClient().createEntry(feedUri, authToken,
-                serializer);
-        } catch (HttpException e) {
-            convertHttpExceptionForWrites(entry.getClass(), "Could not update entry.", e);
-            return null; // never reached.
-        }
-
+        InputStream is = getGDataClient().createEntry(feedUri, authToken, serializer);
         GDataParser parser = factory.createParser(entry.getClass(), is);
         try {
             return parser.parseStandaloneEntry();
@@ -136,13 +118,12 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * @param feedUri the URI of the feed to be fetched and parsed
      * @param authToken the current authToken to use for the request
      * @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
     public GDataParser getParserForCellsFeed(String feedUri, String authToken)
-            throws AuthenticationException, ConflictDetectedException,
-            ParseException, IOException, AllDeletedUnavailableException {
+            throws ParseException, IOException, HttpException {
         return getParserForTypedFeed(CellEntry.class, feedUri, authToken);
     }
 
@@ -152,18 +133,21 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * the feed type from the URI alone, this method assumes the default feed
      * type! This is probably NOT what you want. Please use the
      * getParserFor[Type]Feed methods.
-     * 
+     *
      * @param feedEntryClass
-     *@param feedUri the URI of the feed to be fetched and parsed
-     * @param authToken the current authToken to use for the request @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @param feedUri the URI of the feed to be fetched and parsed
+     * @param authToken the current authToken to use for the request
+     * @return a parser for the indicated feed
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
     public GDataParser getParserForFeed(Class feedEntryClass, String feedUri, String authToken)
-            throws AuthenticationException, ParseException, IOException,
-            AllDeletedUnavailableException {
-        return getParserForTypedFeed(SpreadsheetEntry.class, feedUri, authToken);
+            throws ParseException, IOException, HttpException {
+        GDataClient gDataClient = getGDataClient();
+        GDataParserFactory gDataParserFactory = getGDataParserFactory();
+        InputStream is = gDataClient.getFeedAsStream(feedUri, authToken);
+        return gDataParserFactory.createParser(feedEntryClass, is);
     }
 
     /**
@@ -172,13 +156,12 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * @param feedUri the URI of the feed to be fetched and parsed
      * @param authToken the current authToken to use for the request
      * @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
     public GDataParser getParserForListFeed(String feedUri, String authToken)
-            throws AuthenticationException, ParseException, IOException,
-            AllDeletedUnavailableException {
+            throws ParseException, IOException, HttpException {
         return getParserForTypedFeed(ListEntry.class, feedUri, authToken);
     }
 
@@ -188,16 +171,13 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * @param feedUri the URI of the feed to be fetched and parsed
      * @param authToken the current authToken to use for the request
      * @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
-    public GDataParser getParserForSpreadsheetsFeed(String feedUri,
-            String authToken)
-            throws AuthenticationException, ParseException, IOException,
-            AllDeletedUnavailableException {
-        return getParserForTypedFeed(SpreadsheetEntry.class, feedUri,
-                authToken);
+    public GDataParser getParserForSpreadsheetsFeed(String feedUri, String authToken)
+            throws ParseException, IOException, HttpException {
+        return getParserForTypedFeed(SpreadsheetEntry.class, feedUri, authToken);
     }
 
     /**
@@ -206,14 +186,12 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * @param feedUri the URI of the feed to be fetched and parsed
      * @param authToken the current authToken to use for the request
      * @return a parser for the indicated feed
-     * @throws AuthenticationException if the authToken is not valid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the response from the server could not be
      *         parsed
      */
-    public GDataParser getParserForWorksheetsFeed(String feedUri,
-            String authToken)
-            throws AuthenticationException, ParseException, IOException,
-            AllDeletedUnavailableException {
+    public GDataParser getParserForWorksheetsFeed(String feedUri, String authToken)
+            throws ParseException, IOException, HttpException {
         return getParserForTypedFeed(WorksheetEntry.class, feedUri, authToken);
     }
 
@@ -227,15 +205,14 @@ public class SpreadsheetsClient extends GDataServiceClient {
      * @param authToken the current authToken to be used for the operation
      * @return An Entry containing the re-parsed version of the entry returned
      *         by the server in response to the update.
-     * @throws AuthenticationException if the authToken is invalid
+     * @throws HttpException if an http error is encountered
      * @throws ParseException if the server returned an error, if the server's
      *         response was unparseable (unlikely), or if <code>entry</code>
      *         is of a read-only type
      * @throws IOException on network error
      */
     public Entry updateEntry(Entry entry, String authToken)
-            throws AuthenticationException, ConflictDetectedException,
-            ParseException, IOException {
+            throws ParseException, IOException, HttpException {
         GDataParserFactory factory = getGDataParserFactory();
         GDataSerializer serializer = factory.createSerializer(entry);
 
@@ -244,16 +221,7 @@ public class SpreadsheetsClient extends GDataServiceClient {
             throw new ParseException("No edit URI -- cannot update.");
         }
 
-        InputStream is;
-        try {
-            is = getGDataClient().updateEntry(editUri,
-                                              authToken,
-                                              serializer);
-        } catch (HttpException e) {
-            convertHttpExceptionForWrites(entry.getClass(), "Could not update entry.", e);
-            return null; // never reached
-        }
-
+        InputStream is = getGDataClient().updateEntry(editUri, authToken, serializer);
         GDataParser parser = factory.createParser(entry.getClass(), is);
         try {
             return parser.parseStandaloneEntry();
