@@ -237,6 +237,9 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       group.setGroup(parser.getAttributeValue(null  /* ns */, "href"));
       group.setDeleted("true".equals(parser.getAttributeValue(null  /* ns */, "deleted")));
       contactEntry.addGroup(group);
+    } else if ("yomiName".equals(name)) {
+      String yomiName = XmlUtils.extractChildText(parser);
+      contactEntry.setYomiName(yomiName);
     }
   }
 

@@ -94,6 +94,8 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     while (eachGroup.hasMoreElements()) {
       serialize(serializer, (GroupMembershipInfo) eachGroup.nextElement());
     }
+
+    serializeYomiName(serializer, entry.getYomiName());
   }
 
   private static void serialize(XmlSerializer serializer, EmailAddress email)
@@ -239,5 +241,16 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   private static void serializeBlob(XmlSerializer serializer, String blob)
       throws IOException, ParseException {
      serializer.text(blob);
+  }
+
+  private static void serializeYomiName(XmlSerializer serializer,
+      String yomiName)
+      throws IOException {
+    if (StringUtils.isEmpty(yomiName)) {
+      return;
+    }
+    serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, "yomiName");
+    serializer.text(yomiName);
+    serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, "yomiName");
   }
 }

@@ -25,6 +25,7 @@ public class ContactEntry extends Entry {
   private final Vector organizations = new Vector();
   private final Vector extendedProperties = new Vector();
   private final Vector groups = new Vector();
+  private String yomiName;
 
   public ContactEntry() {
     super();
@@ -112,6 +113,14 @@ public class ContactEntry extends Entry {
     return organizations;
   }
 
+  public void setYomiName(String yomiName) {
+    this.yomiName = yomiName;
+  }
+
+  public String getYomiName() {
+    return yomiName;
+  }
+
   /*
   * (non-Javadoc)
   * @see com.google.wireless.gdata.data.Entry#clear()
@@ -129,6 +138,7 @@ public class ContactEntry extends Entry {
     organizations.removeAllElements();
     extendedProperties.removeAllElements();
     groups.removeAllElements();
+    yomiName = null;
   }
 
   protected void toString(StringBuffer sb) {
@@ -188,6 +198,9 @@ public class ContactEntry extends Entry {
       sb.append("  ");
       ((GroupMembershipInfo) iter.nextElement()).toString(sb);
       sb.append("\n");
+    }
+    if (!StringUtils.isEmpty(yomiName)) {
+      sb.append(" yomiName:").append(yomiName).append("\n");
     }
   }
 
