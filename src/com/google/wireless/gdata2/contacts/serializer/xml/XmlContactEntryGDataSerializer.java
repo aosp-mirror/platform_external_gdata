@@ -33,6 +33,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     super(factory, entry);
   }
 
+  @Override
   protected void declareExtraEntryNamespaces(XmlSerializer serializer) throws IOException {
     super.declareExtraEntryNamespaces(serializer);
     serializer.setPrefix(XmlContactsGDataParser.NAMESPACE_CONTACTS,
@@ -51,10 +52,8 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     ContactEntry entry = getContactEntry();
     entry.validate();
 
-    serializeLink(serializer, XmlContactsGDataParser.LINK_REL_EDIT_PHOTO,
-        entry.getLinkEditPhotoHref(), entry.getLinkEditPhotoType());
     serializeLink(serializer, XmlContactsGDataParser.LINK_REL_PHOTO,
-        entry.getLinkPhotoHref(), entry.getLinkPhotoType());
+        entry.getLinkPhotoHref(), entry.getLinkPhotoType(), entry.getLinkPhotoETag());
 
     // Serialize the contact specific parts of this entry.  Note that
     // gd:ContactSection and gd:geoPt are likely to be deprecated, and

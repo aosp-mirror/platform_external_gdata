@@ -109,8 +109,8 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     serializeTitle(serializer, entry.getTitle());
 
     if (format != FORMAT_CREATE) {
-      serializeLink(serializer, "edit" /* rel */, entry.getEditUri(), null /* type */);
-      serializeLink(serializer, "alternate" /* rel */, entry.getHtmlUri(), "text/html" /* type */);
+      serializeLink(serializer, "edit" /* rel */, entry.getEditUri(), null /* type */, null /* etag */ );
+      serializeLink(serializer, "alternate" /* rel */, entry.getHtmlUri(), "text/html" /* type */, null /* etag */ );
     }
 
     serializeSummary(serializer, entry.getSummary());
@@ -172,7 +172,18 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     serializer.endTag(null /* ns */, "title");
   }
 
-  public static void serializeLink(XmlSerializer serializer, String rel, String href, String type)
+  /**
+   * Serializes a link relationship into the xml serializer passed in.
+   * 
+   * @param serializer The serializer to be used
+   * @param rel        The relationship value (like alternate, edit etc)
+   * @param href       the URI this link points to
+   * @param type       the content type
+   * @param etag       the optional etag if this link specifies a resource
+   * 
+   * @exception IOException
+   */
+  protected static void serializeLink(XmlSerializer serializer, String rel, String href, String type, String etag)
       throws IOException {
     if (StringUtils.isEmpty(href)) {
       return;
@@ -181,6 +192,7 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     serializer.attribute(null /* ns */, "rel", rel);
     serializer.attribute(null /* ns */, "href", href);
     if (!StringUtils.isEmpty(type)) serializer.attribute(null /* ns */, "type", type);
+    if (!StringUtils.isEmpty(etag)) serializer.attribute(null /* ns */, "etag", etag);
     serializer.endTag(null /* ns */, "link");
   }
 

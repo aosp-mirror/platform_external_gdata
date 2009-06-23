@@ -90,7 +90,7 @@ public class CalendarClient extends GDataServiceClient {
     public GDataParser getParserForUserCalendars(String feedUrl, String authToken)
             throws ParseException, IOException, HttpException {
         GDataClient gDataClient = getGDataClient();
-        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken);
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, null /* etag */);
         return getGDataParserFactory().createParser(CalendarEntry.class, is);
     }
 }

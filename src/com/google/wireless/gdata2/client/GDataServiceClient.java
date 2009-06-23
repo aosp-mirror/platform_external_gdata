@@ -65,15 +65,17 @@ public abstract class GDataServiceClient {
      * @param feedEntryClass the class of Entry that is contained in the feed
      * @param feedUrl ThAe URL of the feed that should be fetched.
      * @param authToken The authentication token for this user.
+     * @param eTag The etag used for this query. Passing null will 
+     *             result in an unconditional query
      * @return A {@link GDataParser} for the requested feed.
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
      * the GData service.
      * @throws HttpException Thrown if the http response contains a result other than 2xx
      */
-    public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken)
+    public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken, String eTag)
             throws ParseException, IOException, HttpException {
-        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken);
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag);
         return gDataParserFactory.createParser(feedEntryClass, is);
     }
 
@@ -83,13 +85,16 @@ public abstract class GDataServiceClient {
      *
      * @param mediaEntryUrl The URL of the media entry that should be fetched.
      * @param authToken The authentication token for this user.
-     * @return A {@link InputStream} for the requested media entry.
+     * @param eTag The eTag associated with this request, this will 
+     *             cause the GET to return a 304 if the content was
+     *             not modified.
+    * @return A {@link InputStream} for the requested media entry.
      * @throws IOException Thrown if an error occurs while communicating with
      * the GData service.
      */
-    public InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken)
+    public InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag)
             throws IOException, HttpException {
-        return gDataClient.getMediaEntryAsStream(mediaEntryUrl, authToken);
+        return gDataClient.getMediaEntryAsStream(mediaEntryUrl, authToken, eTag);
     }
 
     /**
@@ -117,16 +122,18 @@ public abstract class GDataServiceClient {
    * Fetches an existing entry.
    * @param entryClass the type of entry to expect
    * @param id of the entry to fetch.
-   * @param authToken The authentication token for this user. @return The entry returned by the server.
+   * @param authToken The authentication token for this user 
+   * @param eTag The etag used for this query. Passing null
+   *        will result in an unconditional query
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws HttpException if the service returns an error response
    * @throws IOException Thrown if an error occurs while communicating with
    * the GData service.
    * @return The entry returned by the server
    */
-    public Entry getEntry(Class entryClass, String id, String authToken)
+    public Entry getEntry(Class entryClass, String id, String authToken, String eTag)
           throws ParseException, IOException, HttpException {
-        InputStream is = getGDataClient().getFeedAsStream(id, authToken);
+        InputStream is = getGDataClient().getFeedAsStream(id, authToken, eTag);
         return parseEntry(entryClass, is);
     }
 
@@ -151,7 +158,7 @@ public abstract class GDataServiceClient {
         }
 
         GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
-        InputStream is = gDataClient.updateEntry(editUri, authToken, serializer);
+        InputStream is = gDataClient.updateEntry(editUri, authToken, entry.getETag(), serializer);
         return parseEntry(entry.getClass(), is);
     }
 
@@ -165,19 +172,21 @@ public abstract class GDataServiceClient {
      * @param contentType The content type of the new media entry
      * @param authToken The authentication token for this user.
      * @return The entry returned by the server as a result of updating the
-     * provided entry.
+     * provided entry 
+     * @param eTag The etag used for this query. Passing null will 
+     *             result in an unconditional query
      * @throws HttpException if the service returns an error response
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
      * the GData service.
      */
     public MediaEntry updateMediaEntry(String editUri, InputStream inputStream, String contentType,
-            String authToken) throws IOException, HttpException, ParseException {
+            String authToken, String eTag) throws IOException, HttpException, ParseException {
         if (StringUtils.isEmpty(editUri)) {
             throw new IllegalArgumentException("No edit URI -- cannot update.");
         }
 
-        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, inputStream, contentType);
+        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, eTag, inputStream, contentType);
         return (MediaEntry)parseEntry(MediaEntry.class, is);
     }
 
@@ -186,13 +195,15 @@ public abstract class GDataServiceClient {
      *
      * @param editUri The editUri for the entry that should be deleted.
      * @param authToken The authentication token for this user.
+     * @param eTag The etag used for this query. Passing null will 
+     *             result in an unconditional query
      * @throws IOException Thrown if an error occurs while communicating with
      * the GData service.
      * @throws HttpException if the service returns an error response
      */
-    public void deleteEntry(String editUri, String authToken)
+    public void deleteEntry(String editUri, String authToken, String eTag)
             throws IOException, HttpException {
-        gDataClient.deleteEntry(editUri, authToken);
+        gDataClient.deleteEntry(editUri, authToken, eTag);
     }
 
     private Entry parseEntry(Class entryClass, InputStream is) throws ParseException, IOException {

@@ -15,9 +15,8 @@ import java.util.Enumeration;
  */
 public class ContactEntry extends Entry {
   private String linkPhotoHref;
-  private String linkEditPhotoHref;
   private String linkPhotoType;
-  private String linkEditPhotoType;
+  private String linkPhotoEtag;
   private final Vector emailAddresses = new Vector();
   private final Vector imAddresses = new Vector();
   private final Vector phoneNumbers = new Vector();
@@ -31,22 +30,15 @@ public class ContactEntry extends Entry {
     super();
   }
 
-  public void setLinkEditPhoto(String href, String type) {
-    this.linkEditPhotoHref = href;
-    this.linkEditPhotoType = type;
-  }
 
-  public String getLinkEditPhotoHref() {
-    return linkEditPhotoHref;
-  }
-
-  public String getLinkEditPhotoType() {
-    return linkEditPhotoType;
-  }
-
-  public void setLinkPhoto(String href, String type) {
+  public void setLinkPhoto(String href, String type, String photoEtag) {
     this.linkPhotoHref = href;
     this.linkPhotoType = type;
+    this.linkPhotoEtag = photoEtag;
+  }
+
+  public String getLinkPhotoETag() {
+      return linkPhotoEtag;
   }
 
   public String getLinkPhotoHref() {
@@ -127,10 +119,9 @@ public class ContactEntry extends Entry {
   */
   public void clear() {
     super.clear();
-    linkEditPhotoHref = null;
-    linkEditPhotoType = null;
     linkPhotoHref = null;
     linkPhotoType = null;
+    linkPhotoEtag = null;
     emailAddresses.removeAllElements();
     imAddresses.removeAllElements();
     phoneNumbers.removeAllElements();
@@ -151,11 +142,8 @@ public class ContactEntry extends Entry {
     if (!StringUtils.isEmpty(linkPhotoType)) {
       sb.append(" linkPhotoType:").append(linkPhotoType).append("\n");
     }
-    if (!StringUtils.isEmpty(linkEditPhotoHref)) {
-      sb.append(" linkEditPhotoHref:").append(linkEditPhotoHref).append("\n");
-    }
-    if (!StringUtils.isEmpty(linkEditPhotoType)) {
-      sb.append(" linkEditPhotoType:").append(linkEditPhotoType).append("\n");
+     if (!StringUtils.isEmpty(linkPhotoEtag)) {
+      sb.append(" linkPhotoEtag:").append(linkPhotoEtag).append("\n");
     }
     for (Enumeration iter = emailAddresses.elements();
         iter.hasMoreElements(); ) {

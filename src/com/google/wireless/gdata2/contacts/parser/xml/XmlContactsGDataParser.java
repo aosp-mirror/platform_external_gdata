@@ -247,11 +247,10 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       throws XmlPullParserException, IOException {
     if (LINK_REL_PHOTO.equals(rel)) {
       ContactEntry contactEntry = (ContactEntry) entry;
-      contactEntry.setLinkPhoto(href, type);
-    } else if (LINK_REL_EDIT_PHOTO.equals(rel)) {
-      ContactEntry contactEntry = (ContactEntry) entry;
-      contactEntry.setLinkEditPhoto(href, type);
-    }
+      XmlPullParser parser = getParser();  
+      String etag = parser.getAttributeValue(null  /* ns */, "etag");
+      contactEntry.setLinkPhoto(href, type, etag);
+    } 
   }
 
   private static void parseContactsElement(ContactsElement element, XmlPullParser parser,

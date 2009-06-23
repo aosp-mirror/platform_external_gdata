@@ -28,7 +28,7 @@ public class XmlGDataParser implements GDataParser {
   public static final String NAMESPACE_OPENSEARCH = "openSearch";
 
   public static final String NAMESPACE_OPENSEARCH_URI =
-      "http://a9.com/-/spec/opensearchrss/1.0/";
+      "http://a9.com/-/spec/opensearch/1.1/";
 
   /** Namespace prefix for GData */
   public static final String NAMESPACE_GD = "gd";
@@ -51,6 +51,13 @@ public class XmlGDataParser implements GDataParser {
       throws ParseException {
     this.is = is;
     this.parser = parser;
+
+    if (!parser.getFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES))
+    {
+      throw new IllegalStateException("A XmlGDataParser needs to be " 
+          + "constructed with a namespace aware XmlPullParser");
+    }
+
     this.isInBadState = false;
     if (this.is != null) {
       try {
@@ -142,8 +149,9 @@ public class XmlGDataParser implements GDataParser {
   }
 
   /**
-   * Parses the feed (but not any entries).
-   *
+   * Parses the feed (but not any entries). This requires a 
+   * namespace enabled parser 
+   * 
    * @return A new {@link Feed} containing information about the feed.
    * @throws XmlPullParserException Thrown if the XML document cannot be
    * parsed.
@@ -154,41 +162,51 @@ public class XmlGDataParser implements GDataParser {
     Feed feed = createFeed();
     // parsing <feed>
     // not interested in any attributes -- move onto the children.
+    
+    feed.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, "etag"));
+  
+
     int eventType = parser.next();
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           String name = parser.getName();
-          if ("totalResults".equals(name)) {
-            feed.setTotalResults(StringUtils.parseInt(
-                XmlUtils.extractChildText(parser), 0));
-          } else if ("startIndex".equals(name)) {
-            feed.setStartIndex(StringUtils.parseInt(
-                XmlUtils.extractChildText(parser), 0));
-          } else if ("itemsPerPage".equals(name)) {
-            feed.setItemsPerPage(StringUtils.parseInt(
-                XmlUtils.extractChildText(parser), 0));
-          } else if ("title".equals(name)) {
-            feed.setTitle(XmlUtils.extractChildText(parser));
-          } else if ("id".equals(name)) {
-            feed.setId(XmlUtils.extractChildText(parser));
-          } else if ("updated".equals(name)) {
-            feed.setLastUpdated(XmlUtils.extractChildText(parser));
-          } else if ("category".equals(name)) {
-            String category =
-                parser.getAttributeValue(null /* ns */, "term");
-            if (!StringUtils.isEmpty(category)) {
-              feed.setCategory(category);
+          String namespace = parser.getNamespace(); 
+
+          if (XmlGDataParser.NAMESPACE_OPENSEARCH_URI.equals(namespace)) {
+            if ("totalResults".equals(name)) {
+              feed.setTotalResults(StringUtils.parseInt(
+                  XmlUtils.extractChildText(parser), 0));
+            } else if ("startIndex".equals(name)) {
+              feed.setStartIndex(StringUtils.parseInt(
+                  XmlUtils.extractChildText(parser), 0));
+            } else if ("itemsPerPage".equals(name)) {
+              feed.setItemsPerPage(StringUtils.parseInt(
+                  XmlUtils.extractChildText(parser), 0));
             }
-            String categoryScheme =
-                parser.getAttributeValue(null /* ns */, "scheme");
-            if (!StringUtils.isEmpty(categoryScheme)) {
-              feed.setCategoryScheme(categoryScheme);
-            }
-          } else if ("entry".equals(name)) {
-            // stop parsing here.
-            // TODO: pay attention to depth?
-            return feed;
+          } else if (XmlGDataParser.NAMESPACE_ATOM_URI.equals(namespace)) {
+            if ("title".equals(name)) {
+              feed.setTitle(XmlUtils.extractChildText(parser));
+            } else if ("id".equals(name)) {
+              feed.setId(XmlUtils.extractChildText(parser));
+            } else if ("updated".equals(name)) {
+              feed.setLastUpdated(XmlUtils.extractChildText(parser));
+            } else if ("category".equals(name)) {
+              String category =
+                  parser.getAttributeValue(null /* ns */, "term");
+              if (!StringUtils.isEmpty(category)) {
+                feed.setCategory(category);
+              }
+              String categoryScheme =
+                  parser.getAttributeValue(null /* ns */, "scheme");
+              if (!StringUtils.isEmpty(categoryScheme)) {
+                feed.setCategoryScheme(categoryScheme);
+              }
+            } else if ("entry".equals(name)) {
+              // stop parsing here.
+              // TODO: pay attention to depth?
+              return feed;
+            } 
           } else {
             handleExtraElementInFeed(feed);
           }
@@ -262,7 +280,6 @@ public class XmlGDataParser implements GDataParser {
     }
 
     try {
-      parser.next();
       handleEntry(entry);
       entry.validate();
     } catch (ParseException xppe1) {
@@ -321,7 +338,6 @@ public class XmlGDataParser implements GDataParser {
           String name = parser.getName();
           if ("entry".equals(name)) {
             try {
-              parser.next();
               handleEntry(entry);
               return entry;
             } catch (XmlPullParserException xppe) {
@@ -373,7 +389,8 @@ public class XmlGDataParser implements GDataParser {
 
   /**
    * Parses the current entry in the XML document.  Assumes that the parser
-   * is currently pointing just after an &lt;entry&gt;.
+   * is currently pointing just at the beginning of an 
+   * &lt;entry&gt;. 
    *
    * @param entry The entry that will be filled.
    * @throws XmlPullParserException Thrown if the XML cannot be parsed.
@@ -381,6 +398,18 @@ public class XmlGDataParser implements GDataParser {
    */
   protected void handleEntry(Entry entry)
       throws XmlPullParserException, IOException, ParseException {
+    // first thing we do is to get the attributes out of the parser for this entry
+    // so we verify that we are at the start of an entry
+    if (!"entry".equals(parser.getName())) {
+       throw new
+         IllegalStateException("Expected <entry>: Actual element: <"
+         + parser.getName() + ">");
+    }
+          
+    entry.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, "etag"));
+    // now skip to the next parser event
+    parser.next();
+
     int eventType = parser.getEventType();
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {

@@ -24,6 +24,7 @@ public class Entry {
     private String categoryScheme = null;
     private String publicationDate = null;
     private String updateDate = null;
+    private String eTagValue = null;
     private boolean deleted = false;
     
     /**
@@ -218,6 +219,21 @@ public class Entry {
      */
     public void setDeleted(boolean isDeleted) {
         deleted = isDeleted;
+    }
+
+    /**
+    * @return the value of the parsed eTag attribute 
+    */
+    public String getETag() {
+        return eTagValue;
+    }
+
+    /**
+     * @param sets the eTag on the entry, used during 
+     *           parsing
+     */
+    public void setETag(String eTag) {
+        eTagValue = eTag;
     }
  
     /**

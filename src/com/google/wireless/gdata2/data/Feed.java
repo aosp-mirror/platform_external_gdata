@@ -18,6 +18,7 @@ public class Feed {
     private String lastUpdated;
     private String category;
     private String categoryScheme;
+    private String eTagValue;
 
     /**
      * Creates a new, empty feed.
@@ -119,4 +120,19 @@ public class Feed {
         this.title = title;
     }
 
+    /**
+    * @return the value of the parsed eTag attribute 
+    */
+    public String getETag() {
+        return eTagValue;
+    }
+
+    /**
+     * @param sets the eTag on the entry, used during 
+     *           parsing
+     */
+    public void setETag(String eTag) {
+        eTagValue = eTag;
+    }
+ 
 }

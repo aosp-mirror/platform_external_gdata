@@ -45,13 +45,17 @@ public interface GDataClient {
      * @param feedUrl The feed that should be fetched.
      * @param authToken The authentication token that should be used when
      * fetching the feed.
+     * @param eTag The eTag associated with this request, this will 
+     *             cause the GET to return a 304 if the content was
+     *             not modified. The parameter can be null
      * @return An InputStream for the feed.
      * @throws IOException Thrown if an io error occurs while communicating with
      * the service.
      * @throws HttpException if the service returns an error response.
      */
     InputStream getFeedAsStream(String feedUrl,
-                                String authToken)
+                                String authToken,
+                                String eTag)
         throws HttpException, IOException;
 
     /**
@@ -62,12 +66,15 @@ public interface GDataClient {
      * @param mediaEntryUrl The media entry that should be fetched.
      * @param authToken The authentication token that should be used when
      * fetching the media entry.
+     * @param eTag The eTag associated with this request, this will 
+     *             cause the GET to return a 304 if the content was
+     *             not modified.
      * @return An InputStream for the media entry.
      * @throws IOException Thrown if an io error occurs while communicating with
      * the service.
      * @throws HttpException if the service returns an error response.
      */
-    InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken)
+    InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag)
         throws HttpException, IOException;
 
     // TODO: support batch update
@@ -100,6 +107,9 @@ public interface GDataClient {
      * @param editUri The edit uri that should be used for updating the entry.
      * @param authToken The authentication token that should be used when 
      * updating the entry.
+     * @param eTag The eTag associated with this request, this will 
+     *             cause the PUT to return a conflict if the
+     *             resource was already modified
      * @param entry The entry that should be updated.
      * @throws IOException Thrown if an io error occurs while communicating with
      * the service.
@@ -107,6 +117,7 @@ public interface GDataClient {
      */
     InputStream updateEntry(String editUri,
                             String authToken,
+                            String eTag,
                             GDataSerializer entry)
         throws HttpException, IOException;
 
@@ -117,12 +128,16 @@ public interface GDataClient {
      * @param editUri The edit uri that should be used for deleting the entry.
      * @param authToken The authentication token that should be used when
      * deleting the entry.
+     * @param eTag The eTag associated with this request, this will 
+     *             cause a failure if the resource was modified
+     *             since retrieval.
      * @throws IOException Thrown if an io error occurs while communicating with
      * the service.
      * @throws HttpException if the service returns an error response.
      */
     void deleteEntry(String editUri,
-                     String authToken)
+                     String authToken,
+                     String eTag)
         throws HttpException, IOException;
 
     /**
@@ -133,7 +148,10 @@ public interface GDataClient {
      *
      * @param editUri The edit uri that should be used for updating the entry.
      * @param authToken The authentication token that should be used when
-     * updating the entry.
+     * updating the entry 
+     * @param eTag The eTag associated with this request, this will 
+     *             cause the PUT to return a conflict if the
+     *             resource was already modified
      * @param mediaEntryInputStream The {@link InputStream} that contains the new
      *   value of the resource
      * @param contentType The contentType of the new media entry
@@ -143,7 +161,7 @@ public interface GDataClient {
      * @return The {@link InputStream} that contains the metadata associated with the
      *   new version of the media entry.
      */
-    public InputStream updateMediaEntry(String editUri, String authToken,
+    public InputStream updateMediaEntry(String editUri, String authToken, String eTag,
             InputStream mediaEntryInputStream, String contentType)
         throws HttpException, IOException;
 }
