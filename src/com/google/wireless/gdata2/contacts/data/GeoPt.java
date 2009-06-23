@@ -61,7 +61,6 @@ public class GeoPt {
         if (label != null) sb.append(" label:").append(label);
     }
 
-    @Override
     public String toString() {
         StringBuffer sb = new StringBuffer();
         toString(sb);

@@ -18,7 +18,6 @@ public class GroupEntry extends Entry {
     return systemGroup;
   }
 
-  @Override
   public void clear() {
     super.clear();
     systemGroup = null;

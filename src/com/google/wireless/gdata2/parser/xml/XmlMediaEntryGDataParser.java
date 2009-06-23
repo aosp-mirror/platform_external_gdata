@@ -29,7 +29,7 @@ public class XmlMediaEntryGDataParser extends XmlGDataParser {
   * @see com.google.wireless.gdata2.parser.xml.XmlGDataParser#createFeed()
   */
   protected Feed createFeed() {
-    throw new UnsupportedOperationException("there is no such thing as a feed of media entries");
+    throw new IllegalStateException("there is no such thing as a feed of media entries");
   }
 
   /*

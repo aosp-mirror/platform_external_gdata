@@ -83,7 +83,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     map.put(TYPESTRING_WORK, new Byte(EmailAddress.TYPE_WORK));
     map.put(TYPESTRING_OTHER, new Byte(EmailAddress.TYPE_OTHER));
     // TODO: this is a hack to support the old feed
-    map.put(GD_NAMESPACE + "primary", (byte)4);
+    map.put(GD_NAMESPACE + "primary", new Byte((byte) 4));
     REL_TO_TYPE_EMAIL = map;
     TYPE_TO_REL_EMAIL = swapMap(map);
 
@@ -243,7 +243,6 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     }
   }
 
-  @Override
   protected void handleExtraLinkInEntry(String rel, String type, String href, Entry entry)
       throws XmlPullParserException, IOException {
     if (LINK_REL_PHOTO.equals(rel)) {

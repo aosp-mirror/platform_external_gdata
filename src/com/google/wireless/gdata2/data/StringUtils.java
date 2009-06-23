@@ -22,7 +22,7 @@ public final class StringUtils {
 
     /**
      * Returns {@code true} if the given string is null, empty, or comprises only
-     * whitespace characters, as defined by {@link Character#isWhitespace(char)}.
+     * whitespace characters, as defined by {@link isWhitespace(char)}.
      *
      * @param string The String that should be examined.
      * @return {@code true} if {@code string} is null, empty, or consists of
@@ -34,7 +34,7 @@ public final class StringUtils {
         }
         int length = string.length();
         for (int i = 0; i < length; i++) {
-            if (!Character.isWhitespace(string.charAt(i))) {
+            if (!isWhitespace(string.charAt(i))) {
                 return false;
             }
         }
@@ -51,4 +51,13 @@ public final class StringUtils {
         }
         return defaultValue;
     }
+
+    public static boolean isWhitespace(char c) {
+    // Reference: http://en.wikipedia.org/wiki/Whitespace_%28computer_science%29
+        return ('\u0009' <= c && c <= '\r') || c == '\u0020' || c == '\u0085'
+            || c == '\u00A0' || c == '\u1680' || c == '\u180E'
+            || ('\u2000' <= c && c <= '\u200A') || c == '\u2028' || c == '\u2029'
+            || c == '\u202F' || c == '\u205F' || c == '\u3000';
+    }
+
 }
