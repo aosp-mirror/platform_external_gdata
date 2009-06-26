@@ -24,12 +24,36 @@ public class ContactEntry extends Entry {
   private final Vector organizations = new Vector();
   private final Vector extendedProperties = new Vector();
   private final Vector groups = new Vector();
-  private String yomiName;
+
+  // new collections in Contacts v3
+  private final Vector calendarLinks = new Vector();
+  private final Vector events = new Vector();
+  private final Vector externalIds = new Vector();
+  private final Vector hobbies = new Vector();
+  private final Vector jots = new Vector();
+  private final Vector languages = new Vector();
+  private final Vector relations = new Vector();
+  private final Vector userDefinedFields = new Vector();
+  private final Vector webSites = new Vector();
+
+  // new properties in contacts v3
+  private String directoryServer;
+  private String gender;
+  private String initials;
+  private String maidenName;
+  private String mileage;
+  private String nickname;
+  private String occupation;
+  private String priority;
+  private String sensitivity;
+  private String shortName;
+  private String subject;
+  private Name name;
+
 
   public ContactEntry() {
     super();
   }
-
 
   public void setLinkPhoto(String href, String type, String photoEtag) {
     this.linkPhotoHref = href;
@@ -65,7 +89,7 @@ public class ContactEntry extends Entry {
     return imAddresses;
   }
 
-  public void addPostalAddress(PostalAddress postalAddress) {
+  public void addPostalAddress(StructuredPostalAddress postalAddress) {
     postalAddresses.addElement(postalAddress);
   }
 
@@ -105,14 +129,304 @@ public class ContactEntry extends Entry {
     return organizations;
   }
 
-  public void setYomiName(String yomiName) {
-    this.yomiName = yomiName;
+  /**
+   * Accessor to the CalendarLink Collection
+   */
+  public Vector getcalendarLinks() {
+      return calendarLinks;
+  }
+  
+  /**
+   * Adds a new member to the CalendarLink collection
+   */
+  public void addCalendarLink(CalendarLink calendarLink) {
+    calendarLinks.addElement(calendarLink);
   }
 
-  public String getYomiName() {
-    return yomiName;
+  /**
+   * Accessor to the Event Collection
+   */
+  public Vector getEvents() {
+      return events;
+  }
+  
+  /**
+   * Adds a new member to the Event collection
+   */
+  public void addEvent(Event event) {
+    events.addElement(event);
   }
 
+ 
+
+  /**
+   * Accessor to the ExternalId Collection
+   */
+  public Vector getExternalIds() {
+      return externalIds;
+  }
+  
+  /**
+   * Adds a new member to the ExternalId collection
+   */
+  public void addExternalId(ExternalId externalId) {
+    externalIds.addElement(externalId);
+  }
+
+  /**
+   * Accessor to the Hobbies Collection
+   */
+  public Vector getHobbies() {
+      return hobbies;
+  }
+  
+  /**
+   * Adds a new member to the Hobbies collection
+   */
+  public void addHobby(String hobby) {
+    hobbies.addElement(hobby);
+  }
+
+  /**
+   * Accessor to the Jots Collection
+   */
+  public Vector getJots() {
+      return jots;
+  }
+  
+  /**
+   * Adds a new member to the Jot collection
+   */
+  public void addJot(String jot) {
+    jots.addElement(jot);
+  }
+
+  /**
+   * Accessor to the Language Collection
+   */
+  public Vector getLanguages() {
+      return languages;
+  }
+  
+  /**
+   * Adds a new member to the Language collection
+   */
+  public void addLanguage(Language language) {
+    languages.addElement(language);
+  }
+
+  /**
+   * Accessor to the Relation Collection
+   */
+  public Vector getRelations() {
+      return relations;
+  }
+  
+  /**
+   * Adds a new member to the Relation collection
+   */
+  public void addRelation(Relation relation) {
+    relations.addElement(relation);
+  }
+
+  /**
+   * Accessor to the UserDefinedField Collection
+   */
+  public Vector getUserDefinedFields() {
+      return userDefinedFields;
+  }
+  
+  /**
+   * Adds a new member to the UserDefinedField collection
+   */
+  public void addUserDefinedField(UserDefinedField userDefinedField) {
+    userDefinedFields.addElement(userDefinedField);
+  }
+
+  /**
+   * Accessor to the WebSite Collection
+   */
+  public Vector getWebSites() {
+      return webSites;
+  }
+  
+  /**
+   * Adds a new member to the WebSite collection
+   */
+  public void addWebSite(WebSite webSite) {
+    webSites.addElement(webSite);
+  }
+  
+
+  /**
+  * Directory server associated with the contact 
+  */
+  public String getDirectoryServer() {
+      return this.directoryServer;
+  }
+  /**
+   * Directory server associated with the contact 
+   */
+  public void setDirectoryServer(String directoryServer) {
+    this.directoryServer = directoryServer;
+  }
+
+  /**
+   * Gender associated with the contact.
+   */
+  public String getGender() {
+      return this.gender;
+  }
+  
+  /**
+   * Gender associated with the contact.
+   */
+  public void setGender(String gender) {
+    this.gender = gender;
+  }
+
+  /**
+   * Contact's initials.
+   */
+  public String getInitials() {
+      return this.initials;
+  }
+  
+  /**
+   * Contact's initials.
+   */
+  public void setInitials(String initials) {
+    this.initials = initials;
+  }
+
+  /**
+   * Maiden name associated with the contact.
+   */
+  public String getMaidenName() {
+      return this.maidenName;
+  }
+  
+  /**
+   * Maiden name associated with the contact.
+   */
+  public void setMaidenName(String maidenName) {
+    this.maidenName = maidenName;
+  }
+
+  /**
+   * Mileage associated with the contact.
+   */
+  public String getMileage() {
+      return this.mileage;
+  }
+  
+  /**
+   * Mileage associated with the contact.
+   */
+  public void setMileage(String mileage) {
+    this.mileage = mileage;
+  }
+
+  /**
+   * Nickname associated with this Contact
+   */
+  public String getNickname() {
+      return this.nickname;
+  }
+  
+  /**
+   * Nickname associated with this Contact
+   */
+  public void setNickname(String nickname) {
+    this.nickname = nickname;
+  }
+
+  /**
+   * Occupation associated with this Contact
+   */
+  public String getOccupation() {
+      return this.occupation;
+  }
+  
+  /**
+   * Occupation associated with this Contact
+   */
+  public void setOccupation(String occupation) {
+    this.occupation = occupation;
+  }
+
+  /**
+   * Priority associated with this Contact
+   */
+  public String getPriority() {
+      return this.priority;
+  }
+  
+  /**
+   * Priority associated with this Contact
+   */
+  public void setPriority(String prority) {
+    this.priority = prority;
+  }
+
+  /**
+   * Specifies contact's sensitivity. Can be either confidential, 
+   * normal, personal or private. 
+   */
+  public String getSensitivity() {
+      return this.sensitivity;
+  }
+  
+  /**
+   * Specifies contact's sensitivity. Can be either confidential, 
+   * normal, personal or private. 
+   */
+  public void setSensitivity(String sensitiviy) {
+    this.sensitivity = sensitiviy;
+  }
+
+  /**
+   * ShortName associated with this Contact
+   */
+  public String getShortName() {
+      return this.shortName;
+  }
+  
+  /**
+   * ShortName associated with this Contact
+   */
+  public void setShortName(String shortName) {
+    this.shortName = shortName;
+  }
+
+  /**
+   * Subject associated with this Contact
+   */
+  public String getSubject() {
+      return this.subject;
+  }
+  
+  /**
+   * Subject associated with this Contact
+   */
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
+
+   /**
+   * Name associated with this Contact
+   */
+  public Name getName() {
+      return this.name;
+  }
+  
+  /**
+   * Name associated with this Contact
+   */
+  public void setName(Name name) {
+    this.name = name;
+  }
+ 
   /*
   * (non-Javadoc)
   * @see com.google.wireless.gdata2.data.Entry#clear()
@@ -122,6 +436,18 @@ public class ContactEntry extends Entry {
     linkPhotoHref = null;
     linkPhotoType = null;
     linkPhotoEtag = null;
+    directoryServer = null;
+    gender = null;
+    initials = null;
+    maidenName = null;
+    mileage = null;
+    nickname = null;
+    occupation = null;
+    priority = null;
+    sensitivity = null;
+    shortName = null;
+    subject = null;
+    name = null;
     emailAddresses.removeAllElements();
     imAddresses.removeAllElements();
     phoneNumbers.removeAllElements();
@@ -129,7 +455,16 @@ public class ContactEntry extends Entry {
     organizations.removeAllElements();
     extendedProperties.removeAllElements();
     groups.removeAllElements();
-    yomiName = null;
+    calendarLinks.removeAllElements();
+    events.removeAllElements();
+    externalIds.removeAllElements();
+    hobbies.removeAllElements();
+    jots.removeAllElements();
+    languages.removeAllElements();
+    relations.removeAllElements();
+    userDefinedFields.removeAllElements();
+    webSites.removeAllElements();
+
   }
 
   protected void toString(StringBuffer sb) {
@@ -144,6 +479,39 @@ public class ContactEntry extends Entry {
     }
      if (!StringUtils.isEmpty(linkPhotoEtag)) {
       sb.append(" linkPhotoEtag:").append(linkPhotoEtag).append("\n");
+    }
+    if (!StringUtils.isEmpty(directoryServer)) {
+      sb.append(" directoryServer:").append(directoryServer);
+    }
+    if (!StringUtils.isEmpty(gender)) {
+      sb.append(" gender:").append(gender);
+    }
+    if (!StringUtils.isEmpty(initials)) {
+      sb.append(" initials:").append(initials);
+    }
+    if (!StringUtils.isEmpty(maidenName)) {
+      sb.append(" maidenName:").append(maidenName);
+    }
+    if (!StringUtils.isEmpty(mileage)) {
+      sb.append(" mileage:").append(mileage);
+    }
+    if (!StringUtils.isEmpty(nickname)) {
+      sb.append(" nickname:").append(nickname);
+    }
+    if (!StringUtils.isEmpty(occupation)) {
+      sb.append(" occupaton:").append(occupation);
+    }
+    if (!StringUtils.isEmpty(priority)) {
+      sb.append(" priority:").append(priority);
+    }
+    if (!StringUtils.isEmpty(sensitivity)) {
+      sb.append(" sensitivity:").append(sensitivity);
+    }
+    if (!StringUtils.isEmpty(shortName)) {
+      sb.append(" shortName:").append(shortName);
+    }
+    if (!StringUtils.isEmpty(subject)) {
+      sb.append(" subject:").append(subject);
     }
     for (Enumeration iter = emailAddresses.elements();
         iter.hasMoreElements(); ) {
@@ -160,7 +528,7 @@ public class ContactEntry extends Entry {
     for (Enumeration iter = postalAddresses.elements();
         iter.hasMoreElements(); ) {
       sb.append("  ");
-      ((PostalAddress) iter.nextElement()).toString(sb);
+      ((StructuredPostalAddress) iter.nextElement()).toString(sb);
       sb.append("\n");
     }
     for (Enumeration iter = phoneNumbers.elements();
@@ -187,8 +555,59 @@ public class ContactEntry extends Entry {
       ((GroupMembershipInfo) iter.nextElement()).toString(sb);
       sb.append("\n");
     }
-    if (!StringUtils.isEmpty(yomiName)) {
-      sb.append(" yomiName:").append(yomiName).append("\n");
+    for (Enumeration iter = calendarLinks.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((CalendarLink) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+    for (Enumeration iter = events.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((Event) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+    for (Enumeration iter = externalIds.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((ExternalId) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+    for (Enumeration iter = hobbies.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      sb.append ((String) iter.nextElement());
+      sb.append("\n");
+    }
+    for (Enumeration iter = jots.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      sb.append ((String) iter.nextElement());
+      sb.append("\n");
+    }
+     for (Enumeration iter = languages.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((Language) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+     for (Enumeration iter = relations.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((Relation) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+    for (Enumeration iter = userDefinedFields.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((UserDefinedField) iter.nextElement()).toString(sb);
+      sb.append("\n");
+    }
+    for (Enumeration iter = webSites.elements();
+        iter.hasMoreElements(); ) {
+      sb.append("  ");
+      ((WebSite) iter.nextElement()).toString(sb);
+      sb.append("\n");
     }
   }
 
@@ -201,7 +620,7 @@ public class ContactEntry extends Entry {
       ((ImAddress) iter.nextElement()).validate();
     }
     for (Enumeration iter = postalAddresses.elements(); iter.hasMoreElements(); ) {
-      ((PostalAddress) iter.nextElement()).validate();
+      ((StructuredPostalAddress) iter.nextElement()).validate();
     }
     for (Enumeration iter = phoneNumbers.elements(); iter.hasMoreElements(); ) {
       ((PhoneNumber) iter.nextElement()).validate();
@@ -214,6 +633,28 @@ public class ContactEntry extends Entry {
     }
     for (Enumeration iter = groups.elements(); iter.hasMoreElements(); ) {
       ((GroupMembershipInfo) iter.nextElement()).validate();
+    }
+
+    for (Enumeration iter = calendarLinks.elements(); iter.hasMoreElements(); ) {
+      ((CalendarLink) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = events.elements(); iter.hasMoreElements(); ) {
+      ((Event) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = externalIds.elements(); iter.hasMoreElements(); ) {
+      ((ExternalId) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = languages.elements(); iter.hasMoreElements(); ) {
+      ((Language) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = relations.elements(); iter.hasMoreElements(); ) {
+      ((Relation) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = userDefinedFields.elements(); iter.hasMoreElements(); ) {
+      ((UserDefinedField) iter.nextElement()).validate();
+    }
+    for (Enumeration iter = webSites.elements(); iter.hasMoreElements(); ) {
+      ((WebSite) iter.nextElement()).validate();
     }
   }
 }

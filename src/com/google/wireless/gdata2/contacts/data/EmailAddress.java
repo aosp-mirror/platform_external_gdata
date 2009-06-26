@@ -11,7 +11,8 @@ public class EmailAddress extends ContactsElement {
   public static final byte TYPE_OTHER = 3;
 
   private String address;
-
+  private String displayName;
+  
   public String getAddress() {
     return address;
   }
@@ -20,9 +21,24 @@ public class EmailAddress extends ContactsElement {
     this.address = address;
   }
 
+  /**
+   * Getter for displayName
+   */
+  public String getDisplayName() {
+      return this.displayName;
+  }
+  
+  /**
+   * Setter for displayName
+   */
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
+  }
+
   public void toString(StringBuffer sb) {
     sb.append("EmailAddress");
     super.toString(sb);
     if (address != null) sb.append(" address:").append(address);
+    if (displayName != null) sb.append(" displayName:").append(displayName);
   }
 }

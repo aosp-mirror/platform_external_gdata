@@ -19,7 +19,8 @@ public class ImAddress extends ContactsElement {
   public static final byte PROTOCOL_GOOGLE_TALK = 7;
   public static final byte PROTOCOL_ICQ = 8;
   public static final byte PROTOCOL_JABBER = 9;
-  public static final byte PROTOCOL_NONE = 10;
+  public static final byte PROTOCOL_NETMEETING = 10;
+  public static final byte PROTOCOL_NONE = 11;
 
   private byte protocolPredefined;
   private String protocolCustom;

@@ -8,7 +8,7 @@ import com.google.wireless.gdata2.contacts.data.EmailAddress;
 import com.google.wireless.gdata2.contacts.data.ImAddress;
 import com.google.wireless.gdata2.contacts.data.Organization;
 import com.google.wireless.gdata2.contacts.data.PhoneNumber;
-import com.google.wireless.gdata2.contacts.data.PostalAddress;
+import com.google.wireless.gdata2.contacts.data.StructuredPostalAddress;
 import com.google.wireless.gdata2.contacts.data.GroupMembershipInfo;
 import com.google.wireless.gdata2.contacts.parser.xml.XmlContactsGDataParser;
 import com.google.wireless.gdata2.data.StringUtils;
@@ -75,7 +75,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
 
     Enumeration eachAddress = entry.getPostalAddresses().elements();
     while (eachAddress.hasMoreElements()) {
-      serialize(serializer, (PostalAddress) eachAddress.nextElement());
+      serialize(serializer, (StructuredPostalAddress) eachAddress.nextElement());
     }
 
     Enumeration eachOrganization = entry.getOrganizations().elements();
@@ -92,8 +92,6 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     while (eachGroup.hasMoreElements()) {
       serialize(serializer, (GroupMembershipInfo) eachGroup.nextElement());
     }
-
-    serializeYomiName(serializer, entry.getYomiName());
   }
 
   private static void serialize(XmlSerializer serializer, EmailAddress email)
@@ -171,12 +169,14 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, "organization");
   }
 
-  private static void serialize(XmlSerializer serializer, PostalAddress addr)
+  private static void serialize(XmlSerializer serializer, StructuredPostalAddress addr)
       throws IOException, ParseException {
-    if (StringUtils.isEmptyOrWhitespace(addr.getValue())) return;
-    serializer.startTag(XmlGDataParser.NAMESPACE_GD_URI, "postalAddress");
+    // todo: replace this with a real check
+    // if (StringUtils.isEmptyOrWhitespace(addr.getValue())) return;
+    serializer.startTag(XmlGDataParser.NAMESPACE_GD_URI, "structuredPostalAddress");
     serializeContactsElement(serializer, addr, XmlContactsGDataParser.TYPE_TO_REL_POSTAL);
-    final String addressValue = addr.getValue();
+    // todo: need to write serializer code
+    final String addressValue = null;
     if (addressValue != null) serializer.text(addressValue);
     serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, "postalAddress");
   }

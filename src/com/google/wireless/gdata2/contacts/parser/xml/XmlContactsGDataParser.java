@@ -9,7 +9,7 @@ import com.google.wireless.gdata2.contacts.data.EmailAddress;
 import com.google.wireless.gdata2.contacts.data.ImAddress;
 import com.google.wireless.gdata2.contacts.data.Organization;
 import com.google.wireless.gdata2.contacts.data.PhoneNumber;
-import com.google.wireless.gdata2.contacts.data.PostalAddress;
+import com.google.wireless.gdata2.contacts.data.StructuredPostalAddress;
 import com.google.wireless.gdata2.contacts.data.GroupMembershipInfo;
 import com.google.wireless.gdata2.data.Entry;
 import com.google.wireless.gdata2.data.Feed;
@@ -50,6 +50,18 @@ public class XmlContactsGDataParser extends XmlGDataParser {
   public static final String TYPESTRING_HOME_FAX = GD_NAMESPACE + "home_fax";
   public static final String TYPESTRING_WORK_FAX = GD_NAMESPACE + "work_fax";
   public static final String TYPESTRING_PAGER = GD_NAMESPACE + "pager";
+  public static final String TYPESTRING_ASSISTANT = GD_NAMESPACE + "assistant";
+  public static final String TYPESTRING_CALLBACK = GD_NAMESPACE + "callback";
+  public static final String TYPESTRING_CAR = GD_NAMESPACE + "car";
+  public static final String TYPESTRING_COMPANY_MAIN = GD_NAMESPACE + "company_main";
+  public static final String TYPESTRING_ISDN = GD_NAMESPACE + "isdn";
+  public static final String TYPESTRING_MAIN = GD_NAMESPACE + "main";
+  public static final String TYPESTRING_OTHER_FAX = GD_NAMESPACE + "other_fax";
+  public static final String TYPESTRING_RADIO = GD_NAMESPACE + "radio";
+  public static final String TYPESTRING_TELEX = GD_NAMESPACE + "telex";
+  public static final String TYPESTRING_TTY_TDD = GD_NAMESPACE + "tty_tdd";
+  public static final String TYPESTRING_WORK_MOBILE = GD_NAMESPACE + "work_mobile";
+  public static final String TYPESTRING_WORK_PAGER = GD_NAMESPACE + "work_pager";
   public static final String TYPESTRING_OTHER = GD_NAMESPACE + "other";
 
   public static final String IM_PROTOCOL_AIM = GD_NAMESPACE + "AIM";
@@ -60,6 +72,8 @@ public class XmlContactsGDataParser extends XmlGDataParser {
   public static final String IM_PROTOCOL_GOOGLE_TALK = GD_NAMESPACE + "GOOGLE_TALK";
   public static final String IM_PROTOCOL_ICQ = GD_NAMESPACE + "ICQ";
   public static final String IM_PROTOCOL_JABBER = GD_NAMESPACE + "JABBER";
+  public static final String IM_PROTOCOL_NETMEETING = GD_NAMESPACE + "netmeeting";
+
 
   private static final Hashtable REL_TO_TYPE_EMAIL;
   private static final Hashtable REL_TO_TYPE_PHONE;
@@ -93,15 +107,26 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     map.put(TYPESTRING_PAGER, new Byte(PhoneNumber.TYPE_PAGER));
     map.put(TYPESTRING_WORK, new Byte(PhoneNumber.TYPE_WORK));
     map.put(TYPESTRING_HOME_FAX, new Byte(PhoneNumber.TYPE_HOME_FAX));
-    map.put(TYPESTRING_WORK_FAX, new Byte(PhoneNumber.TYPE_WORK_FAX));
+    map.put(TYPESTRING_ASSISTANT, new Byte(PhoneNumber.TYPE_ASSISTANT));
+    map.put(TYPESTRING_CALLBACK, new Byte(PhoneNumber.TYPE_CALLBACK));
+    map.put(TYPESTRING_CAR, new Byte(PhoneNumber.TYPE_CAR));
+    map.put(TYPESTRING_COMPANY_MAIN, new Byte(PhoneNumber.TYPE_COMPANY_MAIN));
+    map.put(TYPESTRING_ISDN, new Byte(PhoneNumber.TYPE_ISDN));
+    map.put(TYPESTRING_MAIN, new Byte(PhoneNumber.TYPE_MAIN));
+    map.put(TYPESTRING_OTHER_FAX, new Byte(PhoneNumber.TYPE_OTHER_FAX));
+    map.put(TYPESTRING_RADIO, new Byte(PhoneNumber.TYPE_RADIO));
+    map.put(TYPESTRING_TELEX, new Byte(PhoneNumber.TYPE_TELEX));
+    map.put(TYPESTRING_TTY_TDD, new Byte(PhoneNumber.TYPE_TTY_TDD));
+    map.put(TYPESTRING_WORK_MOBILE, new Byte(PhoneNumber.TYPE_WORK_MOBILE));
+    map.put(TYPESTRING_WORK_PAGER, new Byte(PhoneNumber.TYPE_WORK_PAGER));
     map.put(TYPESTRING_OTHER, new Byte(PhoneNumber.TYPE_OTHER));
     REL_TO_TYPE_PHONE = map;
     TYPE_TO_REL_PHONE = swapMap(map);
 
     map = new Hashtable();
-    map.put(TYPESTRING_HOME, new Byte(PostalAddress.TYPE_HOME));
-    map.put(TYPESTRING_WORK, new Byte(PostalAddress.TYPE_WORK));
-    map.put(TYPESTRING_OTHER, new Byte(PostalAddress.TYPE_OTHER));
+    map.put(TYPESTRING_HOME, new Byte(StructuredPostalAddress.TYPE_HOME));
+    map.put(TYPESTRING_WORK, new Byte(StructuredPostalAddress.TYPE_WORK));
+    map.put(TYPESTRING_OTHER, new Byte(StructuredPostalAddress.TYPE_OTHER));
     REL_TO_TYPE_POSTAL = map;
     TYPE_TO_REL_POSTAL = swapMap(map);
 
@@ -127,6 +152,8 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     map.put(IM_PROTOCOL_GOOGLE_TALK, new Byte(ImAddress.PROTOCOL_GOOGLE_TALK));
     map.put(IM_PROTOCOL_ICQ, new Byte(ImAddress.PROTOCOL_ICQ));
     map.put(IM_PROTOCOL_JABBER, new Byte(ImAddress.PROTOCOL_JABBER));
+    map.put(IM_PROTOCOL_NETMEETING, new Byte(ImAddress.PROTOCOL_NETMEETING));
+  
     IM_PROTOCOL_STRING_TO_TYPE_MAP = map;
     IM_PROTOCOL_TYPE_TO_STRING_MAP = swapMap(map);
   }
@@ -214,9 +241,10 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       }
       contactEntry.addImAddress(imAddress);
     } else if ("postalAddress".equals(name)) {
-      PostalAddress postalAddress = new PostalAddress();
+      StructuredPostalAddress postalAddress = new StructuredPostalAddress();
       parseContactsElement(postalAddress, parser, REL_TO_TYPE_POSTAL);
-      postalAddress.setValue(XmlUtils.extractChildText(parser));
+      // TODO: write the parsing code
+      // postalAddress.setValue(XmlUtils.extractChildText(parser));
       contactEntry.addPostalAddress(postalAddress);
     } else if ("phoneNumber".equals(name)) {
       PhoneNumber phoneNumber = new PhoneNumber();
@@ -237,10 +265,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       group.setGroup(parser.getAttributeValue(null  /* ns */, "href"));
       group.setDeleted("true".equals(parser.getAttributeValue(null  /* ns */, "deleted")));
       contactEntry.addGroup(group);
-    } else if ("yomiName".equals(name)) {
-      String yomiName = XmlUtils.extractChildText(parser);
-      contactEntry.setYomiName(yomiName);
-    }
+    } 
   }
 
   protected void handleExtraLinkInEntry(String rel, String type, String href, Entry entry)
