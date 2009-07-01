@@ -8,6 +8,9 @@ import com.google.wireless.gdata2.data.StringUtils;
 import com.google.wireless.gdata2.data.XmlUtils;
 import com.google.wireless.gdata2.parser.GDataParser;
 import com.google.wireless.gdata2.parser.ParseException;
+import com.google.wireless.gdata2.data.batch.BatchInterrupted;
+import com.google.wireless.gdata2.data.batch.BatchStatus;
+import com.google.wireless.gdata2.data.batch.BatchUtils;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -36,6 +39,13 @@ public class XmlGDataParser implements GDataParser {
   /** Namespace URI for GData */
   public static final String NAMESPACE_GD_URI =
       "http://schemas.google.com/g/2005";
+
+  /** Namespace prefix for GData batch operations */
+  public static final String NAMESPACE_BATCH = "batch";
+
+  /** Namespace uri for GData batch operations */
+  public static final String NAMESPACE_BATCH_URI =
+      "http://schemas.google.com/gdata/batch";
 
   private final InputStream is;
   private final XmlPullParser parser;
@@ -210,7 +220,6 @@ public class XmlGDataParser implements GDataParser {
           } else {
             handleExtraElementInFeed(feed);
           }
-          break;
         default:
           break;
       }
@@ -388,6 +397,30 @@ public class XmlGDataParser implements GDataParser {
   }
 
   /**
+   * Supply a 'skipSubTree' API which, for some reason, the kxml2 pull parser
+   * hasn't implemented.
+   */
+  protected void skipSubTree()
+      throws XmlPullParserException, IOException {
+    // Iterate the remaining structure for this element, discarding events
+    // until we hit the element's corresponding end tag.
+    int level = 1;
+    while (level > 0) {
+      int eventType = parser.next();
+      switch (eventType) {
+        case XmlPullParser.START_TAG:
+          ++level;
+          break;
+        case XmlPullParser.END_TAG:
+          --level;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  /**
    * Parses the current entry in the XML document.  Assumes that the parser
    * is currently pointing just at the beginning of an 
    * &lt;entry&gt;. 
@@ -465,6 +498,8 @@ public class XmlGDataParser implements GDataParser {
             entry.setUpdateDate(XmlUtils.extractChildText(parser));
           } else if ("deleted".equals(name)) {
             entry.setDeleted(true);
+          } else if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
+            handleBatchInfo(entry);
           } else {
             handleExtraElementInEntry(entry);
           }
@@ -515,6 +550,43 @@ public class XmlGDataParser implements GDataParser {
 
       eventType = parser.next();
     }
+  }
+
+  private void handleBatchInfo(Entry entry)
+      throws IOException, XmlPullParserException {
+    String name = parser.getName();
+    if ("status".equals(name)) {
+      BatchStatus status = new BatchStatus();
+      BatchUtils.setBatchStatus(entry, status);
+      status.setStatusCode(getIntAttribute(parser, "code"));
+      status.setReason(getAttribute(parser, "reason"));
+      status.setContentType(getAttribute(parser, "content-type"));
+      // TODO: Read sub-tree into content.
+      skipSubTree();
+    } else if ("id".equals(name)) {
+      BatchUtils.setBatchId(entry, XmlUtils.extractChildText(parser));
+    } else if ("operation".equals(name)) {
+      BatchUtils.setBatchOperation(entry, getAttribute(parser, "type"));
+    } else if ("interrupted".equals(name)) {
+      BatchInterrupted interrupted = new BatchInterrupted();
+      BatchUtils.setBatchInterrupted(entry, interrupted);
+      interrupted.setReason(getAttribute(parser, "reason"));
+      interrupted.setErrorCount(getIntAttribute(parser, "error"));
+      interrupted.setSuccessCount(getIntAttribute(parser, "success"));
+      interrupted.setTotalCount(getIntAttribute(parser, "parsed"));
+      // TODO: Read sub-tree into content.
+      skipSubTree();
+    } else {
+      throw new XmlPullParserException("Unexpected batch element " + name);
+    }
+  }
+
+  private static String getAttribute(XmlPullParser parser, String name) {
+    return parser.getAttributeValue(null /* ns */, name);
+  }
+
+  private static int getIntAttribute(XmlPullParser parser, String name) {
+    return Integer.parseInt(getAttribute(parser, name));
   }
 
   /*

@@ -8,6 +8,7 @@ import com.google.wireless.gdata2.data.Entry;
 import com.google.wireless.gdata2.serializer.GDataSerializer;
 
 import java.io.InputStream;
+import java.util.Enumeration;
 
 /**
  * Factory that creates {@link GDataParser}s and {@link GDataSerializer}s.
@@ -45,4 +46,12 @@ public interface GDataParserFactory {
    * @return The GDataSerializer that will serialize entry.
    */
   GDataSerializer createSerializer(Entry entry);
+
+  /**
+   * Creates a new {@link GDataSerializer} for the provided batch of entries.
+   *
+   * @param batch An enumeration of entries comprising the batch.
+   * @return The GDataSerializer that will serialize the batch.
+   */
+  GDataSerializer createSerializer(Enumeration batch);
 }
