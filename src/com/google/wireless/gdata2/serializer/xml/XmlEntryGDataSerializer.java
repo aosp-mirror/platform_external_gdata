@@ -2,7 +2,6 @@
 
 package com.google.wireless.gdata2.serializer.xml;
 
-import com.google.wireless.gdata2.data.batch.BatchUtils;
 import com.google.wireless.gdata2.data.Entry;
 import com.google.wireless.gdata2.data.ExtendedProperty;
 import com.google.wireless.gdata2.data.StringUtils;
@@ -69,19 +68,15 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     // TODO: make the output compact
 
     serializer.setOutput(out, "UTF-8");
-    if (format != FORMAT_BATCH) {
-      serializer.startDocument("UTF-8", new Boolean(false));
-      declareEntryNamespaces(serializer);
-    }
+    serializer.startDocument("UTF-8", new Boolean(false));
 
+    declareEntryNamespaces(serializer);
     serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, "entry");
 
     serializeEntryContents(serializer, format);
 
     serializer.endTag(XmlGDataParser.NAMESPACE_ATOM_URI, "entry");
-    if (format != FORMAT_BATCH) {
-      serializer.endDocument();
-    }
+    serializer.endDocument();
     serializer.flush();
   }
 
@@ -106,10 +101,6 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
   private final void serializeEntryContents(XmlSerializer serializer,
       int format)
       throws ParseException, IOException {
-
-    if (format == FORMAT_BATCH) {
-      serializeBatchInfo(serializer);
-    }
 
     if (format != FORMAT_CREATE) {
       serializeId(serializer, entry.getId());
@@ -286,24 +277,4 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     serializer.text(updateDate);
     serializer.endTag(null /* ns */, "updated");
   }
-
-  private void serializeBatchInfo(XmlSerializer serializer)
-      throws IOException {
-    if (!StringUtils.isEmpty(entry.getETag())) {
-     serializer.attribute(XmlGDataParser.NAMESPACE_GD_URI, "etag",
-         entry.getETag());
-    }
-    if (!StringUtils.isEmpty(BatchUtils.getBatchOperation(entry))) {
-      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, "operation");
-      serializer.attribute(null /* ns */, "type",
-          BatchUtils.getBatchOperation(entry));
-      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, "operation");
-    }
-    if (!StringUtils.isEmpty(BatchUtils.getBatchId(entry))) {
-      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, "id");
-      serializer.text(BatchUtils.getBatchId(entry));
-      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, "id");
-    }
-  }
-
 }

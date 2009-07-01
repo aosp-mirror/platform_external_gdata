@@ -2,7 +2,6 @@
 
 package com.google.wireless.gdata2.data;
 
-import com.google.wireless.gdata2.data.batch.BatchInfo;
 import com.google.wireless.gdata2.parser.ParseException;
 
 /**
@@ -27,7 +26,6 @@ public class Entry {
     private String updateDate = null;
     private String eTagValue = null;
     private boolean deleted = false;
-    private BatchInfo batchInfo = null;
     
     /**
      * Creates a new empty entry.
@@ -52,7 +50,6 @@ public class Entry {
         publicationDate = null;
         updateDate = null;
         deleted = false;
-        batchInfo = null;
     }
 
     /**
@@ -238,23 +235,7 @@ public class Entry {
     public void setETag(String eTag) {
         eTagValue = eTag;
     }
-
-    /**
-     * Used internally to access batch related properties.
-     * Clients should use {@link BatchUtils} instead.
-     */
-    public BatchInfo getBatchInfo() {
-        return batchInfo;
-    }
-
-    /**
-     * Used internally to update batch related properties.
-     * Clients should use {@link BatchUtils} instead.
-     */
-    public void setBatchInfo(BatchInfo batchInfo) {
-        this.batchInfo = batchInfo;
-    }
-
+ 
     /**
      * Appends the name and value to this StringBuffer, if value is not null.
      * Uses the format: "<NAME>: <VALUE>\n"
@@ -293,10 +274,6 @@ public class Entry {
         appendIfNotNull(sb, "PUBLICATION DATE", publicationDate);
         appendIfNotNull(sb, "UPDATE DATE", updateDate);
         appendIfNotNull(sb, "DELETED", String.valueOf(deleted));
-        appendIfNotNull(sb, "ETAG", String.valueOf(eTagValue));
-        if (batchInfo != null) {
-          appendIfNotNull(sb, "BATCH", batchInfo.toString());
-        }
     }
 
     /**

@@ -164,23 +164,4 @@ public interface GDataClient {
     public InputStream updateMediaEntry(String editUri, String authToken, String eTag,
             InputStream mediaEntryInputStream, String contentType)
         throws HttpException, IOException;
-
-  /**
-   * Connects to a GData server (specified by the batchUrl) and submits a
-   * batch for processing.  The response from the server is returned as an
-   * {@link InputStream}.  The caller is responsible for calling
-   * {@link InputStream#close()} on the returned {@link InputStream}.
-   *
-   * @param batchUrl The batch url to which the batch is submitted.
-   * @param authToken the authentication token that should be used when
-   * submitting the batch.
-   * @param batch The batch of entries to submit.
-   * @throws IOException Thrown if an io error occurs while communicating with
-   * the service.
-   * @throws HttpException if the service returns an error response.
-   */
-  InputStream submitBatch(String batchUrl,
-       String authToken,
-       GDataSerializer batch)
-       throws HttpException, IOException;
 }

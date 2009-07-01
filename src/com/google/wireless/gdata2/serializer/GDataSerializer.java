@@ -31,11 +31,6 @@ public interface GDataSerializer {
     public static final int FORMAT_UPDATE = 2;
 
     /**
-     * Serialize the entry as part of a batch of operations.
-     */
-    public static final int FORMAT_BATCH = 3;
-
-    /**
      * Returns the Content-Type for this serialization format.
      * @return The Content-Type for this serialization format.
      */
@@ -48,7 +43,6 @@ public interface GDataSerializer {
      * @see #FORMAT_FULL
      * @see #FORMAT_CREATE
      * @see #FORMAT_UPDATE
-     * @see #FORMAT_BATCH
      * 
      * @param out The {@link OutputStream} to which the entry should be 
      * serialized.

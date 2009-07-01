@@ -11,7 +11,6 @@ import com.google.wireless.gdata2.serializer.GDataSerializer;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 
 /**
  * Abstract base class for service-specific clients to access GData feeds.
@@ -218,23 +217,4 @@ public abstract class GDataServiceClient {
             }
         }
     }
-
-  /**
-   * Submits a batch of operations.
-   * @param feedEntryClass the type of the entry to expect.
-   * @param batchUrl The url to which the batch is submitted.
-   * @param authToken The authentication token for this user.
-   * @param entries an enumeration of the entries to submit.
-   * @throws HttpException if the service returns an error response
-   * @throws ParseException Thrown if the server response cannot be parsed.
-   * @throws IOException Thrown if an error occurs while communicating with the
-   * GData service.
-   */
-  public GDataParser submitBatch(Class feedEntryClass, String batchUrl, String authToken,
-      Enumeration entries) throws ParseException, IOException, HttpException {
-    GDataSerializer serializer = gDataParserFactory.createSerializer(entries);
-    InputStream is = gDataClient.submitBatch(batchUrl, authToken, serializer);
-    return gDataParserFactory.createParser(feedEntryClass, is);
-  }
-
 }
