@@ -28,11 +28,9 @@ public class StructuredPostalAddress extends ContactsElement {
   private String formatedAddress;
 
   /**
-   * Empty default constructor
+   * default empty constructor
    */
-  public StructuredPostalAddress()
-  {
-  }
+  public StructuredPostalAddress() {}
  
   /**
    * Getter for street 

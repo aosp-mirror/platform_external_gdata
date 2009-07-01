@@ -24,6 +24,11 @@ public class Relation {
   private String text;
  
   /**
+   * default empty constructor
+   */
+  public Relation() {}
+  
+  /**
    * A simple string value used to name this relation. 
    * The value must not be empty or all whitespace 
    */

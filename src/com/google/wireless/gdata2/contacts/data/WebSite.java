@@ -21,6 +21,11 @@ public class WebSite extends ContactsElement {
   private String href;
 
   /**
+   * default empty constructor
+   */
+  public WebSite() {}
+
+  /**
    * The URL of the website.
    */
   public String getHRef() {

@@ -30,4 +30,14 @@ public class ContactsClient extends GDataServiceClient {
   public String getServiceName() {
     return SERVICE;
   }
+
+  /**
+   * Returns the protocol version used by this GDataServiceClient, 
+   * in the form of a string. Contacts is using "3.0"
+   * 
+   * @return the protocolVersion 
+   */
+  public String getProtocolVersion() {
+      return "3.0";
+  }
 }

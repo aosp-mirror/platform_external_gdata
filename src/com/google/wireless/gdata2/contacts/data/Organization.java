@@ -17,9 +17,13 @@ public class Organization extends ContactsElement {
   private String orgDepartment;
   private String orgJobDescription;
   private String orgSymbol;
+  private String where;
 
-  // TODO: do not have a gd:where yet
-  private Object where;
+  /**
+   * default empty constructor
+   */
+  public Organization() {}
+  
  
   public String getName() {
     return name;
@@ -94,16 +98,18 @@ public class Organization extends ContactsElement {
   }
 
   /**
-   * Getter for where
+   * A place associated with the organization, e.g. office 
+   * location. In Contacts, this is just a string value.
    */
-  public Object getWhere() {
+  public String getWhere() {
       return this.where;
   }
   
   /**
-   * Setter for where
+  * A place associated with the organization, e.g. office 
+   * location. In Contacts, this is just a string value.
    */
-  public void setWhere(Object where) {
+  public void setWhere(String where) {
     this.where = where;
   }
 

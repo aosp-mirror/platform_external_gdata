@@ -12,7 +12,12 @@ public class EmailAddress extends ContactsElement {
 
   private String address;
   private String displayName;
-  
+
+  /**
+   * default empty constructor
+   */
+  public EmailAddress() {}
+
   public String getAddress() {
     return address;
   }

@@ -20,6 +20,11 @@ public class Language {
  
   private String label;
   private String code;
+
+   /**
+   * default empty constructor
+   */
+  public Language() {}
  
   /**
    * A freeform name of a language. Must not be empty or all 

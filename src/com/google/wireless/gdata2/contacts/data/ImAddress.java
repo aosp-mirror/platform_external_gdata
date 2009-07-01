@@ -26,6 +26,11 @@ public class ImAddress extends ContactsElement {
   private String protocolCustom;
   private String address;
 
+  /**
+   * default empty constructor
+   */
+  public ImAddress() {}
+
   public byte getProtocolPredefined() {
     return protocolPredefined;
   }

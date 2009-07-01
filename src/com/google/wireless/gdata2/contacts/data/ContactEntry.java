@@ -50,7 +50,9 @@ public class ContactEntry extends Entry {
   private String subject;
   private Name name;
 
-
+  /**
+   * default empty constructor
+   */
   public ContactEntry() {
     super();
   }

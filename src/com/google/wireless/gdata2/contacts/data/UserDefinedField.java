@@ -17,12 +17,10 @@ public class UserDefinedField {
   private String value;
  
 
-  /**
-   * Default empty constructor
+  /** 
+   * default empty constructor
    */
-  public UserDefinedField()
-  {
-  }
+  public UserDefinedField() {}
 
   /**
    * Default constructor

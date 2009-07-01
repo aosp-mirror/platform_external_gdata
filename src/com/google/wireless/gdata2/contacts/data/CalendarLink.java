@@ -13,7 +13,13 @@ public class CalendarLink extends ContactsElement {
   public static final byte TYPE_HOME = 1;
   public static final byte TYPE_WORK = 2;
   public static final byte TYPE_FREE_BUSY = 3;
+ 
   
+  /**
+   * default empty constructor
+   */
+  public CalendarLink() {}
+
   private String href;
 
   /**

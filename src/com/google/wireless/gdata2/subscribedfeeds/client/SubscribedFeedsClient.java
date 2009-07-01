@@ -33,4 +33,14 @@ public class SubscribedFeedsClient extends GDataServiceClient {
     public String getServiceName() {
         return SERVICE;
     }
+
+     /**
+     * Returns the protocol version used by this GDataServiceClient, 
+     * in the form of a string. Subscribed feeds is using the default
+     * 
+     * @return protocolVersion 
+     */
+    public String getProtocolVersion() {
+        return DEFAULT_GDATA_VERSION;
+    }
 }

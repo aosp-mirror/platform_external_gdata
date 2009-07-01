@@ -29,6 +29,12 @@ public class PhoneNumber extends ContactsElement {
 
   private String phoneNumber;
 
+  /**
+   * default empty constructor
+   */
+  public PhoneNumber() {}
+  
+
   public String getPhoneNumber() {
     return phoneNumber;
   }

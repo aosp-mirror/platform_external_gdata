@@ -18,6 +18,11 @@ public class ExternalId {
   private String type;
 
   /**
+   * default empty constructor
+   */
+  public ExternalId() {}
+
+  /**
    * A simple string value used to name this ID.
    */
   public String getLabel() {

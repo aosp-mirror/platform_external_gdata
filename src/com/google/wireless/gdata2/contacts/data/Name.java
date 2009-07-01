@@ -20,11 +20,9 @@ public class Name  {
   private String additionalNameYomi;
 
   /**
-   * Default empty constructor
+   * default empty constructor
    */
-  public Name()
-  {
-  }
+  public Name() {}
 
   /**
    * Getter for givenName, Person's given name.

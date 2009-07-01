@@ -9,6 +9,11 @@ public class GeoPt {
     private Float longitude;
     private Float elevation;
 
+    /**
+     * default empty constructor
+     */
+    public GeoPt() {}
+
     // TODO: figure out how to store the GeoPt time
     private String time;
 

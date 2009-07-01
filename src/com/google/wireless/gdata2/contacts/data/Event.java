@@ -21,6 +21,12 @@ public class Event {
   private String startDate;
   
   /**
+   * default empty constructor
+   */
+  public Event() {}
+
+
+  /**
    * A simple string value used to name this event. It allows UIs to 
    * display a label such as "Start Date". May not be empty or all 
    * whitespace. 
@@ -53,14 +59,16 @@ public class Event {
   }
 
   /**
-   * StartDate associated with this event
+   * Contacts supports an xs:date value here 
+   * Describes when the event starts.
    */
   public String getStartDate() {
       return this.startDate;
   }
   
   /**
-   * StartDate associated with this event
+   * Contacts supports an xs:date value here 
+   * Describes when the event starts.
    */
   public void setStartDate(String startDate) {
     this.startDate = startDate;

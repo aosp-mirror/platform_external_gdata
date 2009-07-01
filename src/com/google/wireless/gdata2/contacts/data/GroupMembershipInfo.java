@@ -8,6 +8,11 @@ public class GroupMembershipInfo {
   private String group;
   private boolean deleted;
 
+  /**
+   * default empty constructor
+   */
+  public GroupMembershipInfo() {}
+
   public String getGroup() {
     return group;
   }

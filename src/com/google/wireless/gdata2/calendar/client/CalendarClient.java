@@ -50,6 +50,19 @@ public class CalendarClient extends GDataServiceClient {
         return SERVICE;
     }
 
+     /**
+     * Returns the protocol version used by this GDataServiceClient, 
+     * in the form of a "2.1" string. For Calendar, we use the 
+     * default 
+     * 
+     * @return String 
+     */
+    public String getProtocolVersion() {
+        return DEFAULT_GDATA_VERSION;
+    }
+
+ 
+
     /**
      * Returns the url for the default feed for a user, after applying the
      * provided QueryParams.
@@ -90,7 +103,7 @@ public class CalendarClient extends GDataServiceClient {
     public GDataParser getParserForUserCalendars(String feedUrl, String authToken)
             throws ParseException, IOException, HttpException {
         GDataClient gDataClient = getGDataClient();
-        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, null /* etag */);
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, null /* etag */, getProtocolVersion());
         return getGDataParserFactory().createParser(CalendarEntry.class, is);
     }
 }

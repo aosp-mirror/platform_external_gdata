@@ -17,6 +17,12 @@ import java.util.Enumeration;
  * Abstract base class for service-specific clients to access GData feeds.
  */
 public abstract class GDataServiceClient {
+
+    /**
+     * Default gdata protocol version that this library supports
+     */
+    protected static String DEFAULT_GDATA_VERSION = "2.0";
+
     private final GDataClient gDataClient;
     private final GDataParserFactory gDataParserFactory;
 
@@ -34,6 +40,14 @@ public abstract class GDataServiceClient {
         return gDataClient;
     }
 
+    /**
+     * Returns the protocol version used by this GDataServiceClient, 
+     * in the form of a "2.1" string 
+     * 
+     * @return String 
+     */
+    public abstract String getProtocolVersion();
+  
     /**
      * Returns the {@link GDataParserFactory} being used by this
      * GDataServiceClient.
@@ -76,8 +90,8 @@ public abstract class GDataServiceClient {
      */
     public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken, String eTag)
             throws ParseException, IOException, HttpException {
-        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag);
-        return gDataParserFactory.createParser(feedEntryClass, is);
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag, getProtocolVersion());
+        return gDataParserFactory.createParser(feedEntryClass, is); 
     }
 
     /**
@@ -95,7 +109,7 @@ public abstract class GDataServiceClient {
      */
     public InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag)
             throws IOException, HttpException {
-        return gDataClient.getMediaEntryAsStream(mediaEntryUrl, authToken, eTag);
+        return gDataClient.getMediaEntryAsStream(mediaEntryUrl, authToken, eTag, getProtocolVersion());
     }
 
     /**
@@ -115,7 +129,7 @@ public abstract class GDataServiceClient {
     public Entry createEntry(String feedUrl, String authToken, Entry entry)
             throws ParseException, IOException, HttpException {
         GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
-        InputStream is = gDataClient.createEntry(feedUrl, authToken, serializer);
+        InputStream is = gDataClient.createEntry(feedUrl, authToken, getProtocolVersion(), serializer);
         return parseEntry(entry.getClass(), is);
     }
 
@@ -134,7 +148,7 @@ public abstract class GDataServiceClient {
    */
     public Entry getEntry(Class entryClass, String id, String authToken, String eTag)
           throws ParseException, IOException, HttpException {
-        InputStream is = getGDataClient().getFeedAsStream(id, authToken, eTag);
+        InputStream is = getGDataClient().getFeedAsStream(id, authToken, eTag, getProtocolVersion());
         return parseEntry(entryClass, is);
     }
 
@@ -159,7 +173,7 @@ public abstract class GDataServiceClient {
         }
 
         GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
-        InputStream is = gDataClient.updateEntry(editUri, authToken, entry.getETag(), serializer);
+        InputStream is = gDataClient.updateEntry(editUri, authToken, entry.getETag(), getProtocolVersion(), serializer);
         return parseEntry(entry.getClass(), is);
     }
 
@@ -187,7 +201,7 @@ public abstract class GDataServiceClient {
             throw new IllegalArgumentException("No edit URI -- cannot update.");
         }
 
-        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, eTag, inputStream, contentType);
+        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, eTag, getProtocolVersion(), inputStream, contentType);
         return (MediaEntry)parseEntry(MediaEntry.class, is);
     }
 
@@ -233,7 +247,7 @@ public abstract class GDataServiceClient {
   public GDataParser submitBatch(Class feedEntryClass, String batchUrl, String authToken,
       Enumeration entries) throws ParseException, IOException, HttpException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entries);
-    InputStream is = gDataClient.submitBatch(batchUrl, authToken, serializer);
+    InputStream is = gDataClient.submitBatch(batchUrl, authToken, getProtocolVersion(), serializer);
     return gDataParserFactory.createParser(feedEntryClass, is);
   }
 
