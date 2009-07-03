@@ -77,6 +77,30 @@ public final class XmlUtils {
                 + "depth " + parentDepth);
     }
 
+  /**
+   * Supply a 'skipSubTree' API which, for some reason, the kxml2 pull parser
+   * hasn't implemented.
+   */
+  public void skipSubTree(XmlPullParser parser)
+      throws XmlPullParserException, IOException {
+    // Iterate the remaining structure for this element, discarding events
+    // until we hit the element's corresponding end tag.
+    int level = 1;
+    while (level > 0) {
+      int eventType = parser.next();
+      switch (eventType) {
+        case XmlPullParser.START_TAG:
+          ++level;
+          break;
+        case XmlPullParser.END_TAG:
+          --level;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
 //    public static void parseChildrenToSerializer(XmlPullParser parser, XmlSerializer serializer)
 //            throws XmlPullParserException, IOException {
 //        int parentDepth = parser.getDepth();

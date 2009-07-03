@@ -33,7 +33,6 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     super(factory, entry);
   }
 
-  @Override
   protected void declareExtraEntryNamespaces(XmlSerializer serializer) throws IOException {
     super.declareExtraEntryNamespaces(serializer);
     serializer.setPrefix(XmlContactsGDataParser.NAMESPACE_CONTACTS,

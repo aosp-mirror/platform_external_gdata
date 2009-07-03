@@ -6,6 +6,7 @@ import com.google.wireless.gdata2.parser.GDataParser;
 import com.google.wireless.gdata2.parser.ParseException;
 import com.google.wireless.gdata2.parser.xml.XmlParserFactory;
 import com.google.wireless.gdata2.serializer.GDataSerializer;
+import com.google.wireless.gdata2.serializer.xml.XmlBatchGDataSerializer;
 import com.google.wireless.gdata2.subscribedfeeds.data.SubscribedFeedsEntry;
 import com.google.wireless.gdata2.subscribedfeeds.serializer.xml.XmlSubscribedFeedsEntryGDataSerializer;
 
@@ -13,6 +14,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.InputStream;
+import java.util.Enumeration;
 
 /**
  * GDataParserFactory that creates XML GDataParsers and GDataSerializers for
@@ -77,5 +79,15 @@ public class XmlSubscribedFeedsGDataParserFactory implements
                 (SubscribedFeedsEntry) entry;
         return new XmlSubscribedFeedsEntryGDataSerializer(xmlFactory,
                 subscribedFeedsEntry);
+    }
+
+    /**
+     * Creates a new {@link GDataSerializer} for the given batch.
+     *
+     * @param batch the {@link Enumeration} of entries in the batch.
+     * @return The {@link GDataSerializer} that will serialize this batch.
+     */
+    public GDataSerializer createSerializer(Enumeration batch) {
+        return new XmlBatchGDataSerializer(this, xmlFactory, batch);
     }
 }

@@ -348,7 +348,7 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
 
 
         serializer.startTag(XmlGDataParser.NAMESPACE_GD_URI, "originalEvent");
-        int index = originalEventId.lastIndexOf("/");
+        int index = originalEventId.lastIndexOf('/');
         if (index != -1) {
             String id = originalEventId.substring(index + 1);
             if (!StringUtils.isEmpty(id)) {

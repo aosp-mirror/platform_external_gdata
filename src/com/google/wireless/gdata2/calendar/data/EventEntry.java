@@ -161,11 +161,11 @@ public class EventEntry extends Entry {
     }
 
     public void clearAttendees() {
-        attendees.clear();
+        attendees.removeAllElements();
     }
 
     public void addAttendee(Who attendee) {
-        attendees.add(attendee);
+        attendees.addElement(attendee);
     }
 
     public Vector getAttendees() {
@@ -173,11 +173,11 @@ public class EventEntry extends Entry {
     }
 
     public void clearWhens() {
-        whens.clear();
+        whens.removeAllElements();
     }
 
     public void addWhen(When when) {
-        whens.add(when);
+        whens.addElement(when);
     }
 
     public Vector getWhens() {
@@ -199,7 +199,7 @@ public class EventEntry extends Entry {
         if (reminders == null) {
             reminders = new Vector();
         }
-        reminders.add(reminder);
+        reminders.addElement(reminder);
     }
 
     public void clearReminders() {

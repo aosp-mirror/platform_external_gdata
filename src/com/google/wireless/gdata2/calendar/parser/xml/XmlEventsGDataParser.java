@@ -64,7 +64,6 @@ public class XmlEventsGDataParser extends XmlGDataParser {
         return new EventEntry();
     }
 
-    @Override
     protected void handleEntry(Entry entry) throws XmlPullParserException,
             IOException, ParseException {
         hasSeenReminder = false; // Reset the state for the new entry
