@@ -2,13 +2,17 @@
 
 package com.google.wireless.gdata2.client;
 
+import com.google.wireless.gdata2.GDataException;
+
 import java.io.InputStream;
 
 /**
  * A class representing exceptional (i.e., non 200) responses from an HTTP
  * Server.
  */
-public class HttpException extends Exception {
+public class HttpException extends GDataException {
+
+  public static final int SC_NOT_MODIFIED = 304;
 
   public static final int SC_BAD_REQUEST = 400;
 
@@ -21,6 +25,8 @@ public class HttpException extends Exception {
   public static final int SC_CONFLICT = 409;
 
   public static final int SC_GONE = 410;
+
+  public static final int SC_PRECONDITION_FAILED = 412;
 
   public static final int SC_INTERNAL_SERVER_ERROR = 500;
 
