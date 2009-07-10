@@ -27,14 +27,14 @@ public class Name  {
   /**
    * Getter for givenName, Person's given name.
    */
-  public String getGiveName() {
+  public String getGivenName() {
       return this.givenName;
   }
   
   /**
    * Setter for givenName, Person's given name.
    */
-  public void setGiveName(String givenName) {
+  public void setGivenName(String givenName) {
     this.givenName = givenName;
   }
 
@@ -42,7 +42,7 @@ public class Name  {
    * Getter for addtionalName, Additional name of the person, eg. 
    * middle name. 
    */ 
-  public String getAddtionalName() {
+  public String getAdditionalName() {
       return this.additionalName;
   }
   
@@ -50,7 +50,7 @@ public class Name  {
    * Setter for addtionalName, Additional name of the person, eg. 
    * middle name. 
    */
-  public void setAddtionalName(String addtionalName) {
+  public void setAdditionalName(String addtionalName) {
     this.additionalName = addtionalName;
   }
 
@@ -113,14 +113,14 @@ public class Name  {
   /**
    * Getter for addtionalNameYomi, Phonetic representation
    */
-  public String getAdditonalNameYomi() {
+  public String getAdditionalNameYomi() {
       return this.additionalNameYomi;
   }
   
   /**
    * Setter for addtionalNameYomi, Phonetic representation
    */
-  public void setAdditonalNameYomi(String addtionalNameYomi) {
+  public void setAdditionalNameYomi(String addtionalNameYomi) {
     this.additionalNameYomi = addtionalNameYomi;
   }
 

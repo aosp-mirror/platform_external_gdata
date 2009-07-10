@@ -2,13 +2,13 @@
 
 package com.google.wireless.gdata2.contacts.data;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import com.google.wireless.gdata2.data.Entry;
 import com.google.wireless.gdata2.data.ExtendedProperty;
 import com.google.wireless.gdata2.data.StringUtils;
 import com.google.wireless.gdata2.parser.ParseException;
-
-import java.util.Vector;
-import java.util.Enumeration;
 
 /**
  * Entry containing information about a contact.
@@ -44,10 +44,22 @@ public class ContactEntry extends Entry {
   private String mileage;
   private String nickname;
   private String occupation;
-  private String priority;
-  private String sensitivity;
   private String shortName;
   private String subject;
+  private String birthday;
+  private String billingInformation;
+
+  public static final byte TYPE_PRIORITY_HIGH = 1;
+  public static final byte TYPE_PRIORITY_NORMAL = 2;
+  public static final byte TYPE_PRIORITY_LOW = 3;
+  private Byte priority;
+
+  public static final byte TYPE_SENSITIVITY_CONFIDENTIAL = 1;
+  public static final byte TYPE_SENSITIVITY_NORMAL = 2;
+  public static final byte TYPE_SENSITIVITY_PERSONAL = 3;
+  public static final byte TYPE_SENSITIVITY_PRIVATE = 4;
+  private Byte sensitivity;
+ 
   private Name name;
 
   /**
@@ -199,7 +211,7 @@ public class ContactEntry extends Entry {
   /**
    * Adds a new member to the Jot collection
    */
-  public void addJot(String jot) {
+  public void addJot(Jot jot) {
     jots.addElement(jot);
   }
 
@@ -360,22 +372,22 @@ public class ContactEntry extends Entry {
   /**
    * Priority associated with this Contact
    */
-  public String getPriority() {
+  public Byte getPriority() {
       return this.priority;
   }
   
   /**
    * Priority associated with this Contact
    */
-  public void setPriority(String prority) {
-    this.priority = prority;
+  public void setPriority(Byte type) {
+    this.priority = priority;
   }
 
   /**
    * Specifies contact's sensitivity. Can be either confidential, 
    * normal, personal or private. 
    */
-  public String getSensitivity() {
+  public Byte getSensitivity() {
       return this.sensitivity;
   }
   
@@ -383,7 +395,7 @@ public class ContactEntry extends Entry {
    * Specifies contact's sensitivity. Can be either confidential, 
    * normal, personal or private. 
    */
-  public void setSensitivity(String sensitiviy) {
+  public void setSensitivity(Byte sensitiviy) {
     this.sensitivity = sensitiviy;
   }
 
@@ -427,6 +439,34 @@ public class ContactEntry extends Entry {
    */
   public void setName(Name name) {
     this.name = name;
+  }
+
+   /**
+   * Birthday associated with this Contact
+   */
+  public String getBirthday() {
+      return this.birthday;
+  }
+  
+  /**
+   * Birthday associated with this Contact
+   */
+  public void setBirthday(String birthday) {
+    this.birthday = birthday;
+  }
+
+  /**
+   * BillingInformation associated with this Contact
+   */
+  public String getBillingInformation() {
+      return this.billingInformation;
+  }
+  
+  /**
+   * BillingInformation associated with this Contact
+   */
+  public void setBillingInformation(String billingInformation) {
+    this.billingInformation = billingInformation;
   }
  
   /*
@@ -503,12 +543,10 @@ public class ContactEntry extends Entry {
     if (!StringUtils.isEmpty(occupation)) {
       sb.append(" occupaton:").append(occupation);
     }
-    if (!StringUtils.isEmpty(priority)) {
-      sb.append(" priority:").append(priority);
-    }
-    if (!StringUtils.isEmpty(sensitivity)) {
-      sb.append(" sensitivity:").append(sensitivity);
-    }
+    sb.append(" priority:").append(priority);
+    
+    sb.append(" sensitivity:").append(sensitivity);
+ 
     if (!StringUtils.isEmpty(shortName)) {
       sb.append(" shortName:").append(shortName);
     }

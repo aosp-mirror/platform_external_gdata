@@ -10,7 +10,7 @@ import com.google.wireless.gdata2.data.StringUtils;
  */
 public class WebSite extends ContactsElement {
   /** The phone number type. */
-  public static final byte TYPE_HOME_PAGE = 1;
+  public static final byte TYPE_HOMEPAGE = 1;
   public static final byte TYPE_BLOG = 2;
   public static final byte TYPE_PROFILE = 3;
   public static final byte TYPE_HOME = 4;
