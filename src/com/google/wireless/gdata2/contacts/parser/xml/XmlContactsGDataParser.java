@@ -162,6 +162,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     map.put(TYPESTRING_PAGER, new Byte(PhoneNumber.TYPE_PAGER));
     map.put(TYPESTRING_WORK, new Byte(PhoneNumber.TYPE_WORK));
     map.put(TYPESTRING_HOME_FAX, new Byte(PhoneNumber.TYPE_HOME_FAX));
+    map.put(TYPESTRING_WORK_FAX, new Byte(PhoneNumber.TYPE_WORK_FAX));
     map.put(TYPESTRING_ASSISTANT, new Byte(PhoneNumber.TYPE_ASSISTANT));
     map.put(TYPESTRING_CALLBACK, new Byte(PhoneNumber.TYPE_CALLBACK));
     map.put(TYPESTRING_CAR, new Byte(PhoneNumber.TYPE_CAR));

@@ -23,7 +23,7 @@ public final class XmlNametable {
   // GD namespace
   public static String GD_EMAIL = "email";
   public static String GD_EMAIL_DISPLAYNAME = "displayName";
-  public static String GD_ADDRESS = "adress";
+  public static String GD_ADDRESS = "address";
   public static String GD_PROTOCOL = "protocol";
   public static String GD_IM = "im";
   public static String GD_DELETED = "deleted";
@@ -43,7 +43,7 @@ public final class XmlNametable {
   public static String GD_SPA_POSTCODE = "postcode";
   public static String GD_SPA_COUNTRY = "country";
   public static String GD_SPA_FORMATTEDADDRESS = "formattedAddress";   
-  public static String GD_PHONENUMBER = "phonenumber";
+  public static String GD_PHONENUMBER = "phoneNumber";
   public static String GD_ORGANIZATION = "organization";
   public static String GD_EXTENDEDPROPERTY = "extendedProperty";
   public static String GD_WHEN = "when";
@@ -76,6 +76,6 @@ public final class XmlNametable {
   public static String GC_SENSITIVITY = "sensitivity";
   public static String GC_SHORTNAME = "shortName";
   public static String GC_SUBJECT = "subject";
-  public static String GC_UDF = "userDefefinedField";
+  public static String GC_UDF = "userDefinedField";
   public static String GC_WEBSITE ="website";
 }
