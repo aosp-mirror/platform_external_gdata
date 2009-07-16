@@ -52,13 +52,13 @@ public class ContactEntry extends Entry {
   public static final byte TYPE_PRIORITY_HIGH = 1;
   public static final byte TYPE_PRIORITY_NORMAL = 2;
   public static final byte TYPE_PRIORITY_LOW = 3;
-  private Byte priority;
+  private byte priority;
 
   public static final byte TYPE_SENSITIVITY_CONFIDENTIAL = 1;
   public static final byte TYPE_SENSITIVITY_NORMAL = 2;
   public static final byte TYPE_SENSITIVITY_PERSONAL = 3;
   public static final byte TYPE_SENSITIVITY_PRIVATE = 4;
-  private Byte sensitivity;
+  private byte sensitivity;
  
   private Name name;
 
@@ -372,14 +372,14 @@ public class ContactEntry extends Entry {
   /**
    * Priority associated with this Contact
    */
-  public Byte getPriority() {
+  public byte getPriority() {
       return this.priority;
   }
   
   /**
    * Priority associated with this Contact
    */
-  public void setPriority(Byte type) {
+  public void setPriority(byte type) {
     this.priority = priority;
   }
 
@@ -387,7 +387,7 @@ public class ContactEntry extends Entry {
    * Specifies contact's sensitivity. Can be either confidential, 
    * normal, personal or private. 
    */
-  public Byte getSensitivity() {
+  public byte getSensitivity() {
       return this.sensitivity;
   }
   
@@ -395,7 +395,7 @@ public class ContactEntry extends Entry {
    * Specifies contact's sensitivity. Can be either confidential, 
    * normal, personal or private. 
    */
-  public void setSensitivity(Byte sensitiviy) {
+  public void setSensitivity(byte sensitiviy) {
     this.sensitivity = sensitiviy;
   }
 
@@ -485,8 +485,8 @@ public class ContactEntry extends Entry {
     mileage = null;
     nickname = null;
     occupation = null;
-    priority = null;
-    sensitivity = null;
+    priority = TypedElement.TYPE_NONE;
+    sensitivity = TypedElement.TYPE_NONE;
     shortName = null;
     subject = null;
     name = null;
