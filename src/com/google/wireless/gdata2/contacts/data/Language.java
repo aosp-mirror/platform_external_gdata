@@ -80,10 +80,15 @@ public class Language {
    }
 
   /**
-   * Currently empty, will be filled when the parser is done
-   * 
+   * A Language either has a code or a label, not both
    */
   public void validate() throws ParseException {
+    if ((StringUtils.isEmpty(label) && 
+         StringUtils.isEmpty(code)) || 
+        (!StringUtils.isEmpty(label) && 
+         !StringUtils.isEmpty(code))) {
+      throw new ParseException("exactly one of label or code must be set");
+    }
   }
 }
 

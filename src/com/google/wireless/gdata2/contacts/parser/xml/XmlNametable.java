@@ -19,6 +19,7 @@ public final class XmlNametable {
   public static String ETAG = "etag";
   public static String VALUESTRING = "valueString";
   public static String STARTTIME = "startTime";
+  public static String PRIMARY = "primary";
 
   // GD namespace
   public static String GD_EMAIL = "email";
@@ -28,6 +29,7 @@ public final class XmlNametable {
   public static String GD_IM = "im";
   public static String GD_DELETED = "deleted";
   public static String GD_NAME = "name";
+  public static String GD_NAME_GIVENNAME = "givenName";
   public static String GD_NAME_ADDITIONALNAME = "additionalName";
   public static String GD_NAME_YOMI = "yomi";
   public static String GD_NAME_FAMILYNAME = "familyName";

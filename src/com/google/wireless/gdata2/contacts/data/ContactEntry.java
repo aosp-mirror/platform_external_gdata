@@ -1,4 +1,4 @@
-// Copyright 2007 The Android Open Source Project
+// Copyright 2009 The Android Open Source Project
 
 package com.google.wireless.gdata2.contacts.data;
 
@@ -146,7 +146,7 @@ public class ContactEntry extends Entry {
   /**
    * Accessor to the CalendarLink Collection
    */
-  public Vector getcalendarLinks() {
+  public Vector getCalendarLinks() {
       return calendarLinks;
   }
   

@@ -22,4 +22,10 @@ public class Jot extends TypedElement {
    * default empty constructor
    */
   public Jot() {}
+
+  /**
+   * override default behaviour, a jot is not relying on either 
+   * label or type 
+   */
+  public void validate() throws ParseException {}
 }

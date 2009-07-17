@@ -501,7 +501,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
   private static void parseContactsElement(ContactsElement element, XmlPullParser parser,
       Hashtable relToTypeMap) throws XmlPullParserException {
     parseTypedElement(element, parser, relToTypeMap);
-    element.setIsPrimary("true".equals(parser.getAttributeValue(null  /* ns */, "primary")));
+    element.setIsPrimary("true".equals(parser.getAttributeValue(null  /* ns */, XmlNametable.PRIMARY)));
   }
 
   private static void parseTypedElement(TypedElement element, XmlPullParser parser,
@@ -578,7 +578,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       while (true) {
         String tag = XmlUtils.nextDirectChildTag(parser, depth);
         if (tag == null) break;
-        if (XmlNametable.GD_NAME.equals(tag)) {
+        if (XmlNametable.GD_NAME_GIVENNAME.equals(tag)) {
           element.setGivenName(XmlUtils.extractChildText(parser));
         } else if (XmlNametable.GD_NAME_ADDITIONALNAME.equals(tag)) {
           element.setAdditionalNameYomi(

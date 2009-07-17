@@ -85,6 +85,9 @@ public class UserDefinedField {
    * 
    */
   public void validate() throws ParseException {
+    if (StringUtils.isEmpty(key)) {
+      throw new ParseException("key has to be set");
+    }
   }
 }
 

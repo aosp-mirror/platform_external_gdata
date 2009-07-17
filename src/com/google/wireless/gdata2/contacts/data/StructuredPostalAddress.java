@@ -21,7 +21,6 @@ public class StructuredPostalAddress extends ContactsElement {
   private String pobox;
   private String neighborhood;
   private String city;
-  private String subregion;
   private String region;
   private String postcode;
   private String country;
@@ -110,25 +109,6 @@ public class StructuredPostalAddress extends ContactsElement {
     this.city = city;
   }
 
-  /**
-   * Getter for subregion 
-   * Handles administrative districts such as U.S. or U.K. 
-   * counties that are not used for mail addressing purposes. 
-   * Subregion is not intended for delivery addresses. 
-   */
-  public String getSubregion() {
-      return this.subregion;
-  }
-  
-  /**
-   * Setter for subregion 
-   * Handles administrative districts such as U.S. or U.K. 
-   * counties that are not used for mail addressing purposes. 
-   * Subregion is not intended for delivery addresses. 
-   */
-  public void setSubregion(String subregion) {
-    this.subregion = subregion;
-  }
 
   /**
    * Getter for region 
@@ -205,7 +185,6 @@ public class StructuredPostalAddress extends ContactsElement {
     if (pobox != null) sb.append(" pobox:").append(pobox);
     if (neighborhood != null) sb.append(" neighborhood:").append(neighborhood);
     if (city != null) sb.append(" city:").append(city);
-    if (subregion != null) sb.append(" subregion:").append(subregion);
     if (region != null) sb.append(" region:").append(region);
     if (postcode != null) sb.append(" postcode:").append(postcode);
     if (country != null) sb.append(" country:").append(country);
