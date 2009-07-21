@@ -52,13 +52,13 @@ public class ContactEntry extends Entry {
   public static final byte TYPE_PRIORITY_HIGH = 1;
   public static final byte TYPE_PRIORITY_NORMAL = 2;
   public static final byte TYPE_PRIORITY_LOW = 3;
-  private byte priority;
+  private byte priority = TypedElement.TYPE_NONE;
 
   public static final byte TYPE_SENSITIVITY_CONFIDENTIAL = 1;
   public static final byte TYPE_SENSITIVITY_NORMAL = 2;
   public static final byte TYPE_SENSITIVITY_PERSONAL = 3;
   public static final byte TYPE_SENSITIVITY_PRIVATE = 4;
-  private byte sensitivity;
+  private byte sensitivity = TypedElement.TYPE_NONE;
  
   private Name name;
 

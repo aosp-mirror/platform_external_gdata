@@ -504,7 +504,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
 
   private static void serializeName(XmlSerializer serializer, Name name)
         throws IOException, ParseException {
-
+    if (name == null) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_NAME);
     serializeNameSubelement(serializer, name.getGivenName(), 
                             name.getGivenNameYomi(), XmlNametable.GD_NAME_GIVENNAME);
