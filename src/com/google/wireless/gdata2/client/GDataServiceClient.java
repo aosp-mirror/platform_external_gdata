@@ -2,6 +2,12 @@
 
 package com.google.wireless.gdata2.client;
 
+import com.google.wireless.gdata2.ConflictDetectedException;
+import com.google.wireless.gdata2.GDataException;
+import com.google.wireless.gdata2.client.AuthenticationException;
+import com.google.wireless.gdata2.client.HttpException;
+import com.google.wireless.gdata2.client.ResourceGoneException;
+import com.google.wireless.gdata2.client.ResourceNotFoundException;
 import com.google.wireless.gdata2.data.Entry;
 import com.google.wireless.gdata2.data.MediaEntry;
 import com.google.wireless.gdata2.data.StringUtils;
@@ -81,35 +87,61 @@ public abstract class GDataServiceClient {
      * @param feedUrl ThAe URL of the feed that should be fetched.
      * @param authToken The authentication token for this user.
      * @param eTag The etag used for this query. Passing null will 
-     *             result in an unconditional query
+     *      result in an unconditional query
      * @return A {@link GDataParser} for the requested feed.
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws ResourceGoneException Thrown if the server indicates that the
+     *      resource is Gone.  Currently used to indicate that some Tombstones
+     *      are missing.
+     * @throws ResourceNotModifiedException Thrown if the retrieval fails
+     *      because the specified ETag matches the current ETag of the entry
+     *      (i.e. the entry has not been modified since last retrieval).
+     * @throws HttpException Thrown if the request returns an error response.
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
-     * @throws HttpException Thrown if the http response contains a result other than 2xx
+     *      the GData service.
      */
-    public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken, String eTag)
-            throws ParseException, IOException, HttpException {
-        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag, getProtocolVersion());
-        return gDataParserFactory.createParser(feedEntryClass, is); 
+    public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken,
+        String eTag) throws GDataException, IOException {
+      try {
+        InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag, 
+            getProtocolVersion());
+        return gDataParserFactory.createParser(feedEntryClass, is);
+      } catch (HttpException e) {
+        convertHttpExceptionForFeedReads("Could not fetch feed " + feedUrl, e);
+        return null; // never reached
+      }
     }
 
     /**
-     * Fetches a media entry as an InputStream.  The caller is responsible for closing the
-     * returned {@link InputStream}.
+     * Fetches a media entry as an InputStream.  The caller is responsible for
+     * closing the returned {@link InputStream}.
      *
      * @param mediaEntryUrl The URL of the media entry that should be fetched.
      * @param authToken The authentication token for this user.
-     * @param eTag The eTag associated with this request, this will 
-     *             cause the GET to return a 304 if the content was
-     *             not modified.
-    * @return A {@link InputStream} for the requested media entry.
+     * @param eTag The ETag associated with this request.
+     * @return A {@link InputStream} for the requested media entry.
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws ResourceGoneException Thrown if the server indicates that the
+     *      resource is Gone.  Currently used to indicate that some Tombstones
+     *      are missing.
+     * @throws ResourceNotModifiedException Thrown if the retrieval fails
+     *      because the specified ETag matches the current ETag of the entry
+     *      (i.e. the entry has not been modified since last retrieval).
+     * @throws HttpException Thrown if the request returns an error response.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
+     *      the GData service.
      */
     public InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag)
-            throws IOException, HttpException {
+        throws GDataException, IOException {
+      try {
         return gDataClient.getMediaEntryAsStream(mediaEntryUrl, authToken, eTag, getProtocolVersion());
+      } catch (HttpException e) {
+        convertHttpExceptionForEntryReads("Could not fetch media entry " + mediaEntryUrl, e);
+        return null; // never reached
+      }
     }
 
     /**
@@ -120,36 +152,56 @@ public abstract class GDataServiceClient {
      * @param authToken The authentication token for this user.
      * @param entry The entry that should be created.
      * @return The entry returned by the server as a result of creating the
-     * provided entry.
+     *      provided entry.
+     * @throws ConflictDetectedException Thrown if the server detects an
+     *      existing entry that conflicts with this one.
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws HttpException Thrown if the request returns an error response.
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
-     * @throws HttpException if the service returns an error response
+     *      the GData service.
      */
     public Entry createEntry(String feedUrl, String authToken, Entry entry)
-            throws ParseException, IOException, HttpException {
-        GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
+        throws GDataException, ParseException, IOException {
+      GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
+      try {
         InputStream is = gDataClient.createEntry(feedUrl, authToken, getProtocolVersion(), serializer);
         return parseEntry(entry.getClass(), is);
+      } catch (HttpException e) {
+        convertHttpExceptionForWrites(entry.getClass(), "Could not create entry " + feedUrl, e);
+        return null; // never reached.
+      }
     }
 
-  /**
-   * Fetches an existing entry.
-   * @param entryClass the type of entry to expect
-   * @param id of the entry to fetch.
-   * @param authToken The authentication token for this user 
-   * @param eTag The etag used for this query. Passing null
-   *        will result in an unconditional query
-   * @throws ParseException Thrown if the server response cannot be parsed.
-   * @throws HttpException if the service returns an error response
-   * @throws IOException Thrown if an error occurs while communicating with
-   * the GData service.
-   * @return The entry returned by the server
-   */
+    /**
+     * Fetches an existing entry.
+     * @param entryClass the type of entry to expect
+     * @param id of the entry to fetch.
+     * @param authToken The authentication token for this user
+     * @param eTag The etag used for this query. Passing null will result in an
+     *      unconditional query
+     * @return The entry returned by the server.
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws ResourceNotFoundException Thrown if the resource was not found.
+     * @throws ResourceNotModifiedException Thrown if the retrieval fails
+     *      because the specified ETag matches the current ETag of the entry
+     *      (i.e. the entry has not been modified since last retrieval).
+     * @throws HttpException Thrown if the request returns an error response.
+     * @throws ParseException Thrown if the server response cannot be parsed.
+     * @throws IOException Thrown if an error occurs while communicating with
+     *      the GData service.
+     */
     public Entry getEntry(Class entryClass, String id, String authToken, String eTag)
-          throws ParseException, IOException, HttpException {
+        throws GDataException, ParseException, IOException {
+      try {
         InputStream is = getGDataClient().getFeedAsStream(id, authToken, eTag, getProtocolVersion());
         return parseEntry(entryClass, is);
+      } catch (HttpException e) {
+        convertHttpExceptionForEntryReads("Could not fetch entry " + id, e);
+        return null; // never reached
+      }
     }
 
     /**
@@ -159,22 +211,35 @@ public abstract class GDataServiceClient {
      * @param entry The entry that should be updated.
      * @param authToken The authentication token for this user.
      * @return The entry returned by the server as a result of updating the
-     * provided entry.
+     *      provided entry.
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws ConflictDetectedException Thrown if the server detects an
+     *      existing entry that conflicts with this one, or if the server
+     *      version of this entry has changed since it was retrieved.
+     * @throws PreconditionFailedException Thrown if the update fails because
+     *      the specified ETag does not match the current ETag of the entry.
+     * @throws HttpException Thrown if the request returns an error response.
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
-     * @throws HttpException if the service returns an error response
+     *      the GData service.
      */
     public Entry updateEntry(Entry entry, String authToken)
-            throws ParseException, IOException, HttpException {
-        String editUri = entry.getEditUri();
-        if (StringUtils.isEmpty(editUri)) {
-            throw new ParseException("No edit URI -- cannot update.");
-        }
+        throws GDataException, ParseException, IOException {
+      String editUri = entry.getEditUri();
+      if (StringUtils.isEmpty(editUri)) {
+        throw new ParseException("No edit URI -- cannot update.");
+      }
 
-        GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
-        InputStream is = gDataClient.updateEntry(editUri, authToken, entry.getETag(), getProtocolVersion(), serializer);
+      GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
+      try {
+        InputStream is = gDataClient.updateEntry(editUri, authToken, entry.getETag(),
+            getProtocolVersion(), serializer);
         return parseEntry(entry.getClass(), is);
+      } catch (HttpException e) {
+        convertHttpExceptionForWrites(entry.getClass(), "Could not update entry " + editUri, e);
+        return null; // never reached
+      }
     }
 
     /**
@@ -182,27 +247,41 @@ public abstract class GDataServiceClient {
      * of the entry stored on the server.
      *
      * @param editUri The URI of the resource that should be updated.
-     * @param inputStream The {@link java.io.InputStream} that contains the new value
-     *   of the media entry
+     * @param inputStream The {@link java.io.InputStream} that contains the new
+     *      value of the media entry
      * @param contentType The content type of the new media entry
      * @param authToken The authentication token for this user.
      * @return The entry returned by the server as a result of updating the
-     * provided entry 
-     * @param eTag The etag used for this query. Passing null will 
-     *             result in an unconditional query
-     * @throws HttpException if the service returns an error response
+     *      provided entry
+     * @param eTag The etag used for this query. Passing null will result in an
+     *      unconditional query
+     * @throws AuthenticationException Thrown if the server considers the 
+     *      authToken invalid.
+     * @throws ConflictDetectedException Thrown if the server detects an
+     *      existing entry that conflicts with this one, or if the server 
+     *      version of this entry has changed since it was retrieved.
+     * @throws PreconditionFailedException Thrown if the update fails because
+     *      the specified ETag does not match the current ETag of the entry.
+     * @throws HttpException Thrown if the request returns an error response.
      * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
+     *      the GData service.
      */
     public MediaEntry updateMediaEntry(String editUri, InputStream inputStream, String contentType,
-            String authToken, String eTag) throws IOException, HttpException, ParseException {
-        if (StringUtils.isEmpty(editUri)) {
-            throw new IllegalArgumentException("No edit URI -- cannot update.");
-        }
+            String authToken, String eTag)
+        throws GDataException, ParseException, IOException {
+      if (StringUtils.isEmpty(editUri)) {
+        throw new IllegalArgumentException("No edit URI -- cannot update.");
+      }
 
-        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, eTag, getProtocolVersion(), inputStream, contentType);
-        return (MediaEntry)parseEntry(MediaEntry.class, is);
+      try {
+        InputStream is = gDataClient.updateMediaEntry(editUri, authToken, eTag,
+            getProtocolVersion(), inputStream, contentType);
+        return (MediaEntry) parseEntry(MediaEntry.class, is);
+      } catch (HttpException e) {
+        convertHttpExceptionForWrites(MediaEntry.class, "Could not update entry " + editUri, e);
+        return null; // never reached
+      }
     }
 
     /**
@@ -210,15 +289,31 @@ public abstract class GDataServiceClient {
      *
      * @param editUri The editUri for the entry that should be deleted.
      * @param authToken The authentication token for this user.
-     * @param eTag The etag used for this query. Passing null will 
-     *             result in an unconditional query
+     * @param eTag The etag used for this query. Passing null will result in an
+     *      unconditional query
+     * @throws AuthenticationException Thrown if the server considers the
+     *      authToken invalid.
+     * @throws ConflictDetectedException Thrown if the server version of
+     *      this entry has changed since it was retrieved.
+     * @throws PreconditionFailedException Thrown if the update fails because
+     *      the specified ETag does not match the current ETag of the entry.
+     * @throws HttpException Thrown if the request returns an error response.
+     * @throws ParseException Thrown if the server response cannot be parsed.
      * @throws IOException Thrown if an error occurs while communicating with
-     * the GData service.
-     * @throws HttpException if the service returns an error response
+     *      the GData service.
      */
     public void deleteEntry(String editUri, String authToken, String eTag)
-            throws IOException, HttpException {
+        throws GDataException, ParseException, IOException {
+      try {
         gDataClient.deleteEntry(editUri, authToken, eTag);
+      } catch (HttpException e) {
+        if (e.getStatusCode() == HttpException.SC_NOT_FOUND) {
+          // the server does not know about this entry.
+          // nothing to delete.
+          return;
+        }
+        convertHttpExceptionForWrites(null, "Unable to delete " + editUri, e);
+      }
     }
 
     private Entry parseEntry(Class entryClass, InputStream is) throws ParseException, IOException {
@@ -239,16 +334,98 @@ public abstract class GDataServiceClient {
    * @param batchUrl The url to which the batch is submitted.
    * @param authToken The authentication token for this user.
    * @param entries an enumeration of the entries to submit.
+   * @throws AuthenticationException Thrown if the server considers the
+   *        authToken invalid.
    * @throws HttpException if the service returns an error response
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
-   * GData service.
+   *        GData service.
    */
   public GDataParser submitBatch(Class feedEntryClass, String batchUrl, String authToken,
-      Enumeration entries) throws ParseException, IOException, HttpException {
+      Enumeration entries) throws GDataException, ParseException, IOException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entries);
-    InputStream is = gDataClient.submitBatch(batchUrl, authToken, getProtocolVersion(), serializer);
-    return gDataParserFactory.createParser(feedEntryClass, is);
+    try {
+      InputStream is = gDataClient.submitBatch(batchUrl, authToken, getProtocolVersion(),
+          serializer);
+      return gDataParserFactory.createParser(feedEntryClass, is);
+    } catch (HttpException e) {
+      convertHttpExceptionsForBatches("Could not submit batch " + batchUrl, e);
+      return null; // never reached.
+    }
   }
 
+  protected void convertHttpExceptionForFeedReads(String message, HttpException cause)
+      throws AuthenticationException, ResourceGoneException, ResourceNotModifiedException,
+      HttpException {
+    switch (cause.getStatusCode()) {
+      case HttpException.SC_FORBIDDEN:
+      case HttpException.SC_UNAUTHORIZED:
+        throw new AuthenticationException(message, cause);
+      case HttpException.SC_GONE:
+        throw new ResourceGoneException(message, cause);
+      case HttpException.SC_NOT_MODIFIED:
+        throw new ResourceNotModifiedException(message, cause);
+      default:
+        throw new HttpException(message + ": " + cause.getMessage(),
+            cause.getStatusCode(), cause.getResponseStream());
+    }
+  }
+
+  protected void convertHttpExceptionForEntryReads(String message, HttpException cause)
+      throws AuthenticationException, HttpException, ResourceNotFoundException,
+      ResourceNotModifiedException {
+    switch (cause.getStatusCode()) {
+      case HttpException.SC_FORBIDDEN:
+      case HttpException.SC_UNAUTHORIZED:
+        throw new AuthenticationException(message, cause);
+      case HttpException.SC_NOT_FOUND:
+        throw new ResourceNotFoundException(message, cause);
+      case HttpException.SC_NOT_MODIFIED:
+        throw new ResourceNotModifiedException(message, cause);
+      default:
+        throw new HttpException(message + ": " + cause.getMessage(),
+            cause.getStatusCode(), cause.getResponseStream());
+    }
+  }
+
+  protected void convertHttpExceptionsForBatches(String message, HttpException cause)
+      throws AuthenticationException, ParseException, HttpException {
+     switch (cause.getStatusCode()) {
+       case HttpException.SC_FORBIDDEN:
+       case HttpException.SC_UNAUTHORIZED:
+         throw new AuthenticationException(message, cause);
+       case HttpException.SC_BAD_REQUEST:
+         throw new ParseException(message + ": " + cause);
+       default:
+         throw new HttpException(message + ": " + cause.getMessage(),
+             cause.getStatusCode(), cause.getResponseStream());
+     }
+  }
+
+  protected void convertHttpExceptionForWrites(Class entryClass, String message,
+      HttpException cause) throws ConflictDetectedException,
+      AuthenticationException, PreconditionFailedException, ParseException,
+      HttpException, IOException {
+    switch (cause.getStatusCode()) {
+      case HttpException.SC_CONFLICT:
+        Entry entry = null;
+        if (entryClass != null) {
+          InputStream is = cause.getResponseStream();
+          if (is != null) {
+            entry = parseEntry(entryClass, cause.getResponseStream());
+          }
+        }
+        throw new ConflictDetectedException(entry);
+      case HttpException.SC_BAD_REQUEST:
+        throw new ParseException(message + ": " + cause);
+      case HttpException.SC_FORBIDDEN:
+      case HttpException.SC_UNAUTHORIZED:
+        throw new AuthenticationException(message, cause);
+      case HttpException.SC_PRECONDITION_FAILED:
+        throw new PreconditionFailedException(message, cause);
+      default:
+        throw new HttpException(message + ": " + cause.getMessage(),
+            cause.getStatusCode(), cause.getResponseStream());
+    }
+  }
 }
