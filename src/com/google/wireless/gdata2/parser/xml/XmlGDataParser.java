@@ -50,6 +50,7 @@ public class XmlGDataParser implements GDataParser {
   private final InputStream is;
   private final XmlPullParser parser;
   private boolean isInBadState;
+  private String fields;
 
   /**
    * Creates a new XmlGDataParser for a feed in the provided InputStream.
@@ -84,6 +85,7 @@ public class XmlGDataParser implements GDataParser {
   */
   public final Feed init() throws ParseException {
     int eventType;
+    fields = null;
     try {
       eventType = parser.getEventType();
     } catch (XmlPullParserException e) {
@@ -105,7 +107,15 @@ public class XmlGDataParser implements GDataParser {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           String name = parser.getName();
-          if ("feed".equals(name)) {
+          if (XmlNametable.PARTIAL.equals(name)) {
+           try {
+             return parsePartialFeed();
+           } catch (XmlPullParserException xppe) {
+             throw new ParseException("Unable to parse <partial> feed start", xppe); 
+           } catch (IOException ioe) {
+             throw new ParseException("Unable to parse <partial> feed start", ioe); 
+           }
+          } else if (XmlNametable.FEED.equals(name)) {
             try {
               return parseFeed();
             } catch (XmlPullParserException xppe) {
@@ -158,6 +168,43 @@ public class XmlGDataParser implements GDataParser {
     return new Entry();
   }
 
+    /**
+   * Parses the partial feed (but not any entries). This requires a 
+   * namespace enabled parser 
+   * 
+   * @return A new {@link Feed} containing information about the feed.
+   * @throws XmlPullParserException Thrown if the XML document cannot be
+   * parsed.
+   * @throws IOException Thrown if the {@link InputStream} behind the feed
+   * cannot be read.
+   */
+  private final Feed parsePartialFeed() throws XmlPullParserException, IOException {
+    // first thing to do is get the attribute we care about from the partial element
+    fields = parser.getAttributeValue(null /* ns */, XmlNametable.FIELDS);
+    Feed feed = null;
+
+    int eventType = parser.next();
+    while (eventType != XmlPullParser.END_DOCUMENT) {
+      switch (eventType) {
+        case XmlPullParser.START_TAG:
+          String name = parser.getName();
+          String namespace = parser.getNamespace(); 
+
+          if (XmlGDataParser.NAMESPACE_ATOM_URI.equals(namespace)) {
+            if (XmlNametable.FEED.equals(name)) {
+              feed = parseFeed();
+            }
+          } 
+        default:
+          break;
+      }
+      eventType = parser.next();
+    }
+    // if we get here, we have a feed with no entries.
+    return feed;
+  }
+
+
   /**
    * Parses the feed (but not any entries). This requires a 
    * namespace enabled parser 
@@ -171,11 +218,8 @@ public class XmlGDataParser implements GDataParser {
   private final Feed parseFeed() throws XmlPullParserException, IOException {
     Feed feed = createFeed();
     // parsing <feed>
-    // not interested in any attributes -- move onto the children.
-    
-    feed.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, "etag"));
-  
-
+   feed.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG));
+ 
     int eventType = parser.next();
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {
@@ -184,35 +228,35 @@ public class XmlGDataParser implements GDataParser {
           String namespace = parser.getNamespace(); 
 
           if (XmlGDataParser.NAMESPACE_OPENSEARCH_URI.equals(namespace)) {
-            if ("totalResults".equals(name)) {
+            if (XmlNametable.TOTAL_RESULTS.equals(name)) {
               feed.setTotalResults(StringUtils.parseInt(
                   XmlUtils.extractChildText(parser), 0));
-            } else if ("startIndex".equals(name)) {
+            } else if (XmlNametable.START_INDEX.equals(name)) {
               feed.setStartIndex(StringUtils.parseInt(
                   XmlUtils.extractChildText(parser), 0));
-            } else if ("itemsPerPage".equals(name)) {
+            } else if (XmlNametable.ITEMS_PER_PAGE.equals(name)) {
               feed.setItemsPerPage(StringUtils.parseInt(
                   XmlUtils.extractChildText(parser), 0));
             }
           } else if (XmlGDataParser.NAMESPACE_ATOM_URI.equals(namespace)) {
-            if ("title".equals(name)) {
+            if (XmlNametable.TITLE.equals(name)) {
               feed.setTitle(XmlUtils.extractChildText(parser));
-            } else if ("id".equals(name)) {
+            } else if (XmlNametable.ID.equals(name)) {
               feed.setId(XmlUtils.extractChildText(parser));
-            } else if ("updated".equals(name)) {
+            } else if (XmlNametable.UPDATED.equals(name)) {
               feed.setLastUpdated(XmlUtils.extractChildText(parser));
-            } else if ("category".equals(name)) {
+            } else if (XmlNametable.CATEGORY.equals(name)) {
               String category =
-                  parser.getAttributeValue(null /* ns */, "term");
+                  parser.getAttributeValue(null /* ns */, XmlNametable.TERM);
               if (!StringUtils.isEmpty(category)) {
                 feed.setCategory(category);
               }
               String categoryScheme =
-                  parser.getAttributeValue(null /* ns */, "scheme");
+                  parser.getAttributeValue(null /* ns */, XmlNametable.SCHEME);
               if (!StringUtils.isEmpty(categoryScheme)) {
                 feed.setCategoryScheme(categoryScheme);
               }
-            } else if ("entry".equals(name)) {
+            } else if (XmlNametable.ENTRY.equals(name)) {
               // stop parsing here.
               // TODO: pay attention to depth?
               return feed;
@@ -277,8 +321,12 @@ public class XmlGDataParser implements GDataParser {
     }
 
     String name = parser.getName();
-    if (!"entry".equals(name)) {
-      throw new ParseException("Expected <entry>: Actual element: "
+    // if, in the future, we have a batch feed with partial results, the next element 
+    // can be either an entry or a partial element
+
+    if ((!XmlNametable.ENTRY.equals(name) &&
+         !XmlNametable.PARTIAL.equals(name))) {
+      throw new ParseException("Expected <entry> or <partial>: Actual element: "
           + "<" + name + ">");
     }
 
@@ -289,8 +337,11 @@ public class XmlGDataParser implements GDataParser {
     }
 
     try {
-      handleEntry(entry);
-      entry.validate();
+      if (XmlNametable.ENTRY.equals(name)) {
+        handleEntry(entry);
+      } else {
+        handlePartialEntry(entry);
+      }
     } catch (ParseException xppe1) {
       try {
         if (hasMoreData()) skipToNextEntry();
@@ -321,6 +372,7 @@ public class XmlGDataParser implements GDataParser {
    * @throws ParseException Thrown if the entry could not be parsed.
    */
   public Entry parseStandaloneEntry() throws ParseException, IOException {
+    fields = null;
     Entry entry = createEntry();
 
     int eventType;
@@ -345,7 +397,18 @@ public class XmlGDataParser implements GDataParser {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           String name = parser.getName();
-          if ("entry".equals(name)) {
+          if (XmlNametable.PARTIAL.equals(name)) {
+            try {
+              handlePartialEntry(entry);
+              return entry;
+            } catch (XmlPullParserException xppe) {
+              throw new ParseException("Unable to parse <partial> entry.",
+                  xppe);
+            } catch (IOException ioe) {
+              throw new ParseException("Unable to parse <partial> entry.",
+                  ioe);
+            }
+          } else if (XmlNametable.ENTRY.equals(name)) {
             try {
               handleEntry(entry);
               return entry;
@@ -387,7 +450,7 @@ public class XmlGDataParser implements GDataParser {
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {
         case XmlPullParser.START_TAG:
-          if ("entry".equals(parser.getName())) {
+          if (XmlNametable.ENTRY.equals(parser.getName())) {
             return;
           }
           break;
@@ -421,6 +484,45 @@ public class XmlGDataParser implements GDataParser {
   }
 
   /**
+   * Parses the current partial start in the XML document. Assumes
+   * that the parser is currently pointing just at the beginning 
+   * of an &lt;partial&gt;. 
+   *
+   * @param entry The entry that will be filled.
+   * @throws XmlPullParserException Thrown if the XML cannot be parsed.
+   * @throws IOException Thrown if the underlying inputstream cannot be read.
+   */
+  protected void handlePartialEntry(Entry entry)
+      throws XmlPullParserException, IOException, ParseException {
+    // first thing we do is to get the attributes out of the parser for this entry
+    // so we verify that we are at the start of an entry
+    if (!XmlNametable.PARTIAL.equals(parser.getName())) {
+       throw new
+         IllegalStateException("Expected <partial>: Actual element: <"
+         + parser.getName() + ">");
+    }
+    
+    fields = parser.getAttributeValue(null /* ns */, XmlNametable.FIELDS);
+    // now skip to the next parser event
+    parser.next();
+
+    int eventType = parser.getEventType();
+    while (eventType != XmlPullParser.END_DOCUMENT) {
+      switch (eventType) {
+        case XmlPullParser.START_TAG:
+          String name = parser.getName();
+          if (XmlNametable.ENTRY.equals(name)) {
+            handleEntry(entry);
+            return;
+          } 
+        default:
+          break;
+      }
+      eventType = parser.next();
+    }
+  }
+
+  /**
    * Parses the current entry in the XML document.  Assumes that the parser
    * is currently pointing just at the beginning of an 
    * &lt;entry&gt;. 
@@ -433,13 +535,14 @@ public class XmlGDataParser implements GDataParser {
       throws XmlPullParserException, IOException, ParseException {
     // first thing we do is to get the attributes out of the parser for this entry
     // so we verify that we are at the start of an entry
-    if (!"entry".equals(parser.getName())) {
+    if (!XmlNametable.ENTRY.equals(parser.getName())) {
        throw new
          IllegalStateException("Expected <entry>: Actual element: <"
          + parser.getName() + ">");
     }
           
-    entry.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, "etag"));
+    entry.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG));
+    entry.setFields(fields);
     // now skip to the next parser event
     parser.next();
 
@@ -449,23 +552,24 @@ public class XmlGDataParser implements GDataParser {
         case XmlPullParser.START_TAG:
           // TODO: make sure these elements are at the expected depth.
           String name = parser.getName();
-          if ("entry".equals(name)) {
+          if (XmlNametable.ENTRY.equals(name)) {
             // stop parsing here.
             return;
-          } else if ("id".equals(name)) {
+          } else if (XmlNametable.ID.equals(name)) {
             entry.setId(XmlUtils.extractChildText(parser));
-          } else if ("title".equals(name)) {
+          } else if (XmlNametable.TITLE.equals(name)) {
             entry.setTitle(XmlUtils.extractChildText(parser));
-          } else if ("link".equals(name)) {
+          } else if (XmlNametable.LINK.equals(name)) {
             String rel =
-                parser.getAttributeValue(null /* ns */, "rel");
+                parser.getAttributeValue(null /* ns */, XmlNametable.REL);
             String type =
-                parser.getAttributeValue(null /* ns */, "type");
+                parser.getAttributeValue(null /* ns */, XmlNametable.TYPE);
             String href =
-                parser.getAttributeValue(null /* ns */, "href");
-            if ("edit".equals(rel)) {
+                parser.getAttributeValue(null /* ns */, XmlNametable.HREF);
+            if (XmlNametable.EDIT_REL.equals(rel)) {
               entry.setEditUri(href);
-            } else if (("alternate").equals(rel) && ("text/html".equals(type))) {
+            } else if (XmlNametable.ALTERNATE_REL.equals(rel)
+                    && XmlNametable.TEXTHTML.equals(type)) {
                 entry.setHtmlUri(href);
             } else {
               handleExtraLinkInEntry(rel,
@@ -473,30 +577,30 @@ public class XmlGDataParser implements GDataParser {
                   href,
                   entry);
             }
-          } else if ("summary".equals(name)) {
+          } else if (XmlNametable.SUMMARY.equals(name)) {
             entry.setSummary(XmlUtils.extractChildText(parser));
-          } else if ("content".equals(name)) {
+          } else if (XmlNametable.CONTENT.equals(name)) {
             // TODO: parse the type
             entry.setContent(XmlUtils.extractChildText(parser));
-          } else if ("author".equals(name)) {
+          } else if (XmlNametable.AUTHOR.equals(name)) {
             handleAuthor(entry);
-          } else if ("category".equals(name)) {
+          } else if (XmlNametable.CATEGORY.equals(name)) {
             String category =
-                parser.getAttributeValue(null /* ns */, "term");
+                parser.getAttributeValue(null /* ns */, XmlNametable.TERM);
             if (category != null && category.length() > 0) {
               entry.setCategory(category);
             }
             String categoryScheme =
-                parser.getAttributeValue(null /* ns */, "scheme");
+                parser.getAttributeValue(null /* ns */, XmlNametable.SCHEME);
             if (categoryScheme != null && category.length() > 0) {
               entry.setCategoryScheme(categoryScheme);
             }
-          } else if ("published".equals(name)) {
+          } else if (XmlNametable.PUBLISHED.equals(name)) {
             entry.setPublicationDate(
                 XmlUtils.extractChildText(parser));
-          } else if ("updated".equals(name)) {
+          } else if (XmlNametable.UPDATED.equals(name)) {
             entry.setUpdateDate(XmlUtils.extractChildText(parser));
-          } else if ("deleted".equals(name)) {
+          } else if (XmlNametable.DELETED.equals(name)) {
             entry.setDeleted(true);
           } else if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
             handleBatchInfo(entry);
@@ -510,6 +614,7 @@ public class XmlGDataParser implements GDataParser {
 
       eventType = parser.next();
     }
+    entry.validate();
   }
 
   private void handleAuthor(Entry entry)
@@ -519,7 +624,7 @@ public class XmlGDataParser implements GDataParser {
     String name = parser.getName();
 
     if (eventType != XmlPullParser.START_TAG ||
-        (!"author".equals(parser.getName()))) {
+        (!XmlNametable.AUTHOR.equals(parser.getName()))) {
       // should not happen.
       throw new
           IllegalStateException("Expected <author>: Actual element: <"
@@ -531,17 +636,17 @@ public class XmlGDataParser implements GDataParser {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           name = parser.getName();
-          if ("name".equals(name)) {
+          if (XmlNametable.NAME.equals(name)) {
             String authorName = XmlUtils.extractChildText(parser);
             entry.setAuthor(authorName);
-          } else if ("email".equals(name)) {
+          } else if (XmlNametable.EMAIL.equals(name)) {
             String email = XmlUtils.extractChildText(parser);
             entry.setEmail(email);
           }
           break;
         case XmlPullParser.END_TAG:
           name = parser.getName();
-          if ("author".equals(name)) {
+          if (XmlNametable.AUTHOR.equals(name)) {
             return;
           }
         default:
@@ -555,25 +660,25 @@ public class XmlGDataParser implements GDataParser {
   private void handleBatchInfo(Entry entry)
       throws IOException, XmlPullParserException {
     String name = parser.getName();
-    if ("status".equals(name)) {
+    if (XmlNametable.STATUS.equals(name)) {
       BatchStatus status = new BatchStatus();
       BatchUtils.setBatchStatus(entry, status);
-      status.setStatusCode(getIntAttribute(parser, "code"));
-      status.setReason(getAttribute(parser, "reason"));
-      status.setContentType(getAttribute(parser, "content-type"));
+      status.setStatusCode(getIntAttribute(parser, XmlNametable.CODE));
+      status.setReason(getAttribute(parser, XmlNametable.REASON));
+      status.setContentType(getAttribute(parser, XmlNametable.CONTENT_TYPE));
       // TODO: Read sub-tree into content.
       skipSubTree();
     } else if ("id".equals(name)) {
       BatchUtils.setBatchId(entry, XmlUtils.extractChildText(parser));
     } else if ("operation".equals(name)) {
-      BatchUtils.setBatchOperation(entry, getAttribute(parser, "type"));
+      BatchUtils.setBatchOperation(entry, getAttribute(parser, XmlNametable.TYPE));
     } else if ("interrupted".equals(name)) {
       BatchInterrupted interrupted = new BatchInterrupted();
       BatchUtils.setBatchInterrupted(entry, interrupted);
-      interrupted.setReason(getAttribute(parser, "reason"));
-      interrupted.setErrorCount(getIntAttribute(parser, "error"));
-      interrupted.setSuccessCount(getIntAttribute(parser, "success"));
-      interrupted.setTotalCount(getIntAttribute(parser, "parsed"));
+      interrupted.setReason(getAttribute(parser, XmlNametable.REASON));
+      interrupted.setErrorCount(getIntAttribute(parser, XmlNametable.ERROR));
+      interrupted.setSuccessCount(getIntAttribute(parser, XmlNametable.SUCCESS));
+      interrupted.setTotalCount(getIntAttribute(parser, XmlNametable.PARSED));
       // TODO: Read sub-tree into content.
       skipSubTree();
     } else {

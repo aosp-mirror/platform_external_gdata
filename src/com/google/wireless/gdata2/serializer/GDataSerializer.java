@@ -40,6 +40,15 @@ public interface GDataSerializer {
      * @return The Content-Type for this serialization format.
      */
     String getContentType();
+
+    /**
+     * Returns if this serializer supports a partial representation 
+     * of the underlying content 
+     * 
+     * @return boolean True if a partial representation will be 
+     *         created
+     */
+    boolean getSupportsPartial();
     
     /**
      * Serializes a GData entry to the provided {@link OutputStream}, using the
@@ -48,7 +57,7 @@ public interface GDataSerializer {
      * @see #FORMAT_FULL
      * @see #FORMAT_CREATE
      * @see #FORMAT_UPDATE
-     * @see #FORMAT_BATCH
+     * @see #FORMAT_BATCH 
      * 
      * @param out The {@link OutputStream} to which the entry should be 
      * serialized.

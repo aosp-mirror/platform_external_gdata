@@ -259,7 +259,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializeGDSubelement(serializer, addr.getRegion(), XmlNametable.GD_SPA_REGION);
     serializeGDSubelement(serializer, addr.getPostcode(), XmlNametable.GD_SPA_POSTCODE);
     serializeGDSubelement(serializer, addr.getCountry(), XmlNametable.GD_SPA_COUNTRY);
-    serializeGDSubelement(serializer, addr.getFormatedAddress(), 
+    serializeGDSubelement(serializer, addr.getFormattedAddress(),
                           XmlNametable.GD_SPA_FORMATTEDADDRESS);
     serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_SPA);
   }

@@ -6,6 +6,7 @@ import com.google.wireless.gdata2.serializer.GDataSerializer;
 import com.google.wireless.gdata2.parser.ParseException;
 import com.google.wireless.gdata2.parser.xml.XmlParserFactory;
 import com.google.wireless.gdata2.parser.xml.XmlGDataParser;
+import com.google.wireless.gdata2.parser.xml.XmlNametable;
 import com.google.wireless.gdata2.client.GDataParserFactory;
 import com.google.wireless.gdata2.data.Entry;
 
@@ -44,6 +45,14 @@ public class XmlBatchGDataSerializer implements GDataSerializer {
     return "application/atom+xml";
   }
 
+  /* (non-Javadoc)
+   * @see GDataSerializer#doesSupportPartial()
+   */
+  public boolean getSupportsPartial() {
+    return false;
+  }
+
+
   public void serialize(OutputStream out, int format)
       throws IOException, ParseException {
     XmlSerializer serializer;
@@ -53,8 +62,8 @@ public class XmlBatchGDataSerializer implements GDataSerializer {
       throw new ParseException("Unable to create XmlSerializer.", e);
     }
 
-    serializer.setOutput(out, "UTF-8");
-    serializer.startDocument("UTF-8", new Boolean(false));
+    serializer.setOutput(out, XmlNametable.UTF8);
+    serializer.startDocument(XmlNametable.UTF8, Boolean.FALSE);
 
     declareNamespaces(serializer);
 
@@ -67,17 +76,17 @@ public class XmlBatchGDataSerializer implements GDataSerializer {
       if (first) {
         // Let the first entry serializer declare extra namespaces.
         first = false;
-        serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, "feed");
+        serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, XmlNametable.FEED);
         entrySerializer.declareExtraEntryNamespaces(serializer);
       }
       entrySerializer.serialize(out, GDataSerializer.FORMAT_BATCH);
     }
 
     if (first) {
-      serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, "feed");
+      serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, XmlNametable.FEED);
     }
 
-    serializer.endTag(XmlGDataParser.NAMESPACE_ATOM_URI, "feed");
+    serializer.endTag(XmlGDataParser.NAMESPACE_ATOM_URI, XmlNametable.FEED);
     serializer.endDocument();
     serializer.flush();
   }

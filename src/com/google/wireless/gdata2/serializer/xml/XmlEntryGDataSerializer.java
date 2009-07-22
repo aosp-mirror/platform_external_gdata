@@ -4,10 +4,10 @@ package com.google.wireless.gdata2.serializer.xml;
 
 import com.google.wireless.gdata2.data.batch.BatchUtils;
 import com.google.wireless.gdata2.data.Entry;
-import com.google.wireless.gdata2.data.ExtendedProperty;
 import com.google.wireless.gdata2.data.StringUtils;
 import com.google.wireless.gdata2.parser.ParseException;
 import com.google.wireless.gdata2.parser.xml.XmlGDataParser;
+import com.google.wireless.gdata2.parser.xml.XmlNametable;
 import com.google.wireless.gdata2.parser.xml.XmlParserFactory;
 import com.google.wireless.gdata2.serializer.GDataSerializer;
 
@@ -28,17 +28,19 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
   /** The entry being serialized. */
   private final Entry entry;
 
-  /**
+  private final boolean supportsPartial;
+
+    /**
    * Creates a new XmlEntryGDataSerializer that will serialize the provided
    * entry.
    *
    * @param entry The entry that should be serialized.
    */
-  public XmlEntryGDataSerializer(XmlParserFactory factory,
-      Entry entry) {
+  public XmlEntryGDataSerializer(XmlParserFactory factory, Entry entry) {
     this.factory = factory;
     this.entry = entry;
-  }
+    supportsPartial = !StringUtils.isEmptyOrWhitespace(this.entry.getFields());
+}
 
   /**
    * Returns the entry being serialized.
@@ -55,6 +57,15 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     return "application/atom+xml";
   }
 
+
+  /* (non-Javadoc)
+  * @see GDataSerializer#getSupportsPartial()
+  */
+  public boolean getSupportsPartial() {
+    return supportsPartial;
+  }
+
+
   /* (non-Javadoc)
   * @see GDataSerializer#serialize(java.io.OutputStream)
   */
@@ -68,29 +79,37 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     }
     // TODO: make the output compact
 
-    serializer.setOutput(out, "UTF-8");
+    serializer.setOutput(out, XmlNametable.UTF8);
     if (format != FORMAT_BATCH) {
-      serializer.startDocument("UTF-8", new Boolean(false));
+      serializer.startDocument(XmlNametable.UTF8, Boolean.FALSE);
       declareEntryNamespaces(serializer);
     }
-
-    serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, "entry");
+    final String fields = entry.getFields();
+    if (getSupportsPartial()) {
+      serializer.startTag(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.PARTIAL);
+      serializer.attribute(null /* ns */, XmlNametable.FIELDS, fields);
+    }
+   
+    serializer.startTag(XmlGDataParser.NAMESPACE_ATOM_URI, XmlNametable.ENTRY);
 
     serializeEntryContents(serializer, format);
 
-    serializer.endTag(XmlGDataParser.NAMESPACE_ATOM_URI, "entry");
+    serializer.endTag(XmlGDataParser.NAMESPACE_ATOM_URI, XmlNametable.ENTRY);
+
+    if (getSupportsPartial()) {
+      serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.PARTIAL);
+    }
+   
     if (format != FORMAT_BATCH) {
       serializer.endDocument();
     }
     serializer.flush();
   }
 
-  private final void declareEntryNamespaces(XmlSerializer serializer)
+  private void declareEntryNamespaces(XmlSerializer serializer)
       throws IOException {
-    serializer.setPrefix("" /* default ns */,
-        XmlGDataParser.NAMESPACE_ATOM_URI);
-    serializer.setPrefix(XmlGDataParser.NAMESPACE_GD,
-        XmlGDataParser.NAMESPACE_GD_URI);
+    serializer.setPrefix("" /* default ns */, XmlGDataParser.NAMESPACE_ATOM_URI);
+    serializer.setPrefix(XmlGDataParser.NAMESPACE_GD, XmlGDataParser.NAMESPACE_GD_URI);
     declareExtraEntryNamespaces(serializer);
   }
 
@@ -103,8 +122,7 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
    * @param serializer
    * @throws IOException
    */
-  private final void serializeEntryContents(XmlSerializer serializer,
-      int format)
+  private void serializeEntryContents(XmlSerializer serializer, int format)
       throws ParseException, IOException {
 
     if (format == FORMAT_BATCH) {
@@ -118,8 +136,10 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     serializeTitle(serializer, entry.getTitle());
 
     if (format != FORMAT_CREATE) {
-      serializeLink(serializer, "edit" /* rel */, entry.getEditUri(), null /* type */, null /* etag */ );
-      serializeLink(serializer, "alternate" /* rel */, entry.getHtmlUri(), "text/html" /* type */, null /* etag */ );
+      serializeLink(serializer, XmlNametable.EDIT_REL /* rel */,
+                    entry.getEditUri(), null /* type */, null /* etag */ );
+      serializeLink(serializer, XmlNametable.ALTERNATE_REL /* rel */,
+                    entry.getHtmlUri(), XmlNametable.TEXTHTML /* type */, null /* etag */ );
     }
 
     serializeSummary(serializer, entry.getSummary());
@@ -128,8 +148,7 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
 
     serializeAuthor(serializer, entry.getAuthor(), entry.getEmail());
 
-    serializeCategory(serializer,
-        entry.getCategory(), entry.getCategoryScheme());
+    serializeCategory(serializer, entry.getCategory(), entry.getCategoryScheme());
 
     if (format == FORMAT_FULL) {
       serializePublicationDate(serializer,
@@ -152,22 +171,20 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
    * @throws IOException Thrown if the entry cannot be written to the
    * underlying {@link OutputStream}.
    */
-  protected void serializeExtraEntryContents(XmlSerializer serializer,
-      int format)
+  protected void serializeExtraEntryContents(XmlSerializer serializer, int format)
       throws ParseException, IOException {
     // no-op in this class.
   }
 
   // TODO: make these helper methods protected so sublcasses can use them?
 
-  private static void serializeId(XmlSerializer serializer,
-      String id) throws IOException {
+  private static void serializeId(XmlSerializer serializer, String id) throws IOException {
     if (StringUtils.isEmpty(id)) {
       return;
     }
-    serializer.startTag(null /* ns */, "id");
+    serializer.startTag(null /* ns */,  XmlNametable.ID);
     serializer.text(id);
-    serializer.endTag(null /* ns */, "id");
+    serializer.endTag(null /* ns */, XmlNametable.ID);
   }
 
   private static void serializeTitle(XmlSerializer serializer,
@@ -176,9 +193,9 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (StringUtils.isEmpty(title)) {
       return;
     }
-    serializer.startTag(null /* ns */, "title");
+    serializer.startTag(null /* ns */, XmlNametable.TITLE);
     serializer.text(title);
-    serializer.endTag(null /* ns */, "title");
+    serializer.endTag(null /* ns */, XmlNametable.TITLE);
   }
 
   /**
@@ -192,17 +209,17 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
    * 
    * @exception IOException
    */
-  protected static void serializeLink(XmlSerializer serializer, String rel, String href, String type, String etag)
-      throws IOException {
+  protected static void serializeLink(XmlSerializer serializer, String rel, String href,
+          String type, String etag) throws IOException {
     if (StringUtils.isEmpty(href)) {
       return;
     }
-    serializer.startTag(null /* ns */, "link");
-    serializer.attribute(null /* ns */, "rel", rel);
-    serializer.attribute(null /* ns */, "href", href);
-    if (!StringUtils.isEmpty(type)) serializer.attribute(null /* ns */, "type", type);
-    if (!StringUtils.isEmpty(etag)) serializer.attribute(null /* ns */, "etag", etag);
-    serializer.endTag(null /* ns */, "link");
+    serializer.startTag(null /* ns */, XmlNametable.LINK);
+    serializer.attribute(null /* ns */, XmlNametable.REL, rel);
+    serializer.attribute(null /* ns */, XmlNametable.HREF, href);
+    if (!StringUtils.isEmpty(type)) serializer.attribute(null /* ns */, XmlNametable.TYPE, type);
+    if (!StringUtils.isEmpty(etag)) serializer.attribute(null /* ns */, XmlNametable.ETAG, etag);
+    serializer.endTag(null /* ns */, XmlNametable.LINK);
   }
 
   private static void serializeSummary(XmlSerializer serializer,
@@ -211,9 +228,9 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (StringUtils.isEmpty(summary)) {
       return;
     }
-    serializer.startTag(null /* ns */, "summary");
+    serializer.startTag(null /* ns */, XmlNametable.SUMMARY);
     serializer.text(summary);
-    serializer.endTag(null /* ns */, "summary");
+    serializer.endTag(null /* ns */, XmlNametable.SUMMARY);
   }
 
   private static void serializeContent(XmlSerializer serializer,
@@ -222,10 +239,10 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (content == null) {
       return;
     }
-    serializer.startTag(null /* ns */, "content");
-    serializer.attribute(null /* ns */, "type", "text");
+    serializer.startTag(null /* ns */, XmlNametable.CONTENT);
+    serializer.attribute(null /* ns */, XmlNametable.TYPE, XmlNametable.TEXT);
     serializer.text(content);
-    serializer.endTag(null /* ns */, "content");
+    serializer.endTag(null /* ns */, XmlNametable.CONTENT);
   }
 
   private static void serializeAuthor(XmlSerializer serializer,
@@ -235,14 +252,14 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (StringUtils.isEmpty(author) || StringUtils.isEmpty(email)) {
       return;
     }
-    serializer.startTag(null /* ns */, "author");
-    serializer.startTag(null /* ns */, "name");
+    serializer.startTag(null /* ns */, XmlNametable.AUTHOR);
+    serializer.startTag(null /* ns */, XmlNametable.NAME);
     serializer.text(author);
-    serializer.endTag(null /* ns */, "name");
-    serializer.startTag(null /* ns */, "email");
+    serializer.endTag(null /* ns */, XmlNametable.NAME);
+    serializer.startTag(null /* ns */, XmlNametable.EMAIL);
     serializer.text(email);
-    serializer.endTag(null /* ns */, "email");
-    serializer.endTag(null /* ns */, "author");
+    serializer.endTag(null /* ns */,  XmlNametable.EMAIL);
+    serializer.endTag(null /* ns */, XmlNametable.AUTHOR);
   }
 
   private static void serializeCategory(XmlSerializer serializer,
@@ -253,14 +270,14 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
         StringUtils.isEmpty(categoryScheme)) {
       return;
     }
-    serializer.startTag(null /* ns */, "category");
+    serializer.startTag(null /* ns */, XmlNametable.CATEGORY);
     if (!StringUtils.isEmpty(category)) {
-      serializer.attribute(null /* ns */, "term", category);
+      serializer.attribute(null /* ns */, XmlNametable.TERM, category);
     }
     if (!StringUtils.isEmpty(categoryScheme)) {
-      serializer.attribute(null /* ns */, "scheme", categoryScheme);
+      serializer.attribute(null /* ns */, XmlNametable.SCHEME, categoryScheme);
     }
-    serializer.endTag(null /* ns */, "category");
+    serializer.endTag(null /* ns */, XmlNametable.CATEGORY);
   }
 
   private static void
@@ -270,9 +287,9 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (StringUtils.isEmpty(publicationDate)) {
       return;
     }
-    serializer.startTag(null /* ns */, "published");
+    serializer.startTag(null /* ns */, XmlNametable.PUBLISHED);
     serializer.text(publicationDate);
-    serializer.endTag(null /* ns */, "published");
+    serializer.endTag(null /* ns */, XmlNametable.PUBLISHED);
   }
 
   private static void
@@ -282,27 +299,27 @@ public class XmlEntryGDataSerializer implements GDataSerializer {
     if (StringUtils.isEmpty(updateDate)) {
       return;
     }
-    serializer.startTag(null /* ns */, "updated");
+    serializer.startTag(null /* ns */, XmlNametable.UPDATED);
     serializer.text(updateDate);
-    serializer.endTag(null /* ns */, "updated");
+    serializer.endTag(null /* ns */,  XmlNametable.UPDATED);
   }
 
   private void serializeBatchInfo(XmlSerializer serializer)
       throws IOException {
     if (!StringUtils.isEmpty(entry.getETag())) {
-     serializer.attribute(XmlGDataParser.NAMESPACE_GD_URI, "etag",
+     serializer.attribute(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.ETAG,
          entry.getETag());
     }
     if (!StringUtils.isEmpty(BatchUtils.getBatchOperation(entry))) {
-      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, "operation");
-      serializer.attribute(null /* ns */, "type",
+      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, XmlNametable.OPERATION);
+      serializer.attribute(null /* ns */, XmlNametable.TYPE,
           BatchUtils.getBatchOperation(entry));
-      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, "operation");
+      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, XmlNametable.OPERATION);
     }
     if (!StringUtils.isEmpty(BatchUtils.getBatchId(entry))) {
-      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, "id");
+      serializer.startTag(XmlGDataParser.NAMESPACE_BATCH_URI, XmlNametable.ID);
       serializer.text(BatchUtils.getBatchId(entry));
-      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, "id");
+      serializer.endTag(XmlGDataParser.NAMESPACE_BATCH_URI, XmlNametable.ID);
     }
   }
 

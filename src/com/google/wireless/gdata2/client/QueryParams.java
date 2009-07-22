@@ -62,6 +62,11 @@ public abstract class QueryParams {
      */
     public static final String MAX_RESULTS_PARAM = "max-results";
 
+    /**
+     * Param name constant for the fields used in partial retrievals
+     */
+    public static final String FIELDS_PARAM = "fields";
+
     private String entryId;
 
     /**
@@ -236,5 +241,19 @@ public abstract class QueryParams {
      */
     public void setUpdatedMin(String updatedMin) {
         setParamValue(UPDATED_MIN_PARAM, updatedMin);
+    }
+
+     /**
+     * @return the field list used
+     */
+    public String getFields() {
+        return getParamValue(FIELDS_PARAM);
+    }
+
+    /**
+     * @param fields the fields expression to be used
+     */
+    public void setFields(String fields) {
+        setParamValue(FIELDS_PARAM, fields);
     }
 }

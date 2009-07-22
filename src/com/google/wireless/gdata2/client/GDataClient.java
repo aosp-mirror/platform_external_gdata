@@ -111,9 +111,12 @@ public interface GDataClient {
 
     /**
      * Connects to a GData server (specified by the editUri) and updates an
-     * existing entry.  The response from the server is returned as an 
-     * {@link InputStream}.  The caller is responsible for calling
-     * {@link InputStream#close()} on the returned {@link InputStream}.
+     * existing entry. If the entry has a partial field mask set 
+     * {@link setFields}, this call will be executed as a partial 
+     * PATCH instead of a full representation PUT. The response from
+     * the server is returned as an {@link InputStream}.  The caller 
+     * is responsible for calling {@link InputStream#close()} on the
+     * returned {@link InputStream}. 
      * 
      * @param editUri The edit uri that should be used for updating the entry.
      * @param authToken The authentication token that should be used when 

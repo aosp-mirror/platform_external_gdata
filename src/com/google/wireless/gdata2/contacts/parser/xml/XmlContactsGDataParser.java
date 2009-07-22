@@ -618,7 +618,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
         } else if (XmlNametable.GD_SPA_COUNTRY.equals(tag)) {
           element.setCountry(XmlUtils.extractChildText(parser));
         } else if (XmlNametable.GD_SPA_FORMATTEDADDRESS.equals(tag)) {
-          element.setFormatedAddress(XmlUtils.extractChildText(parser));
+          element.setFormattedAddress(XmlUtils.extractChildText(parser));
         }
       }
     }

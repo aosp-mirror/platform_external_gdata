@@ -24,7 +24,7 @@ public class StructuredPostalAddress extends ContactsElement {
   private String region;
   private String postcode;
   private String country;
-  private String formatedAddress;
+  private String formattedAddress;
 
   /**
    * default empty constructor
@@ -166,16 +166,16 @@ public class StructuredPostalAddress extends ContactsElement {
    * Getter for formatedAddress 
    * The full, unstructured postal address. 
    */
-  public String getFormatedAddress() {
-      return this.formatedAddress;
+  public String getFormattedAddress() {
+      return this.formattedAddress;
   }
   
   /**
    * Setter for formatedAddress 
    * The full, unstructured postal address. 
    */
-  public void setFormatedAddress(String formatedAddress) {
-    this.formatedAddress = formatedAddress;
+  public void setFormattedAddress(String formattedAddress) {
+    this.formattedAddress = formattedAddress;
   }
 
   public void toString(StringBuffer sb) {
@@ -188,6 +188,6 @@ public class StructuredPostalAddress extends ContactsElement {
     if (region != null) sb.append(" region:").append(region);
     if (postcode != null) sb.append(" postcode:").append(postcode);
     if (country != null) sb.append(" country:").append(country);
-    if (formatedAddress != null) sb.append(" formatedAddress:").append(formatedAddress);
+    if (formattedAddress != null) sb.append(" formatedAddress:").append(formattedAddress);
   }
 }

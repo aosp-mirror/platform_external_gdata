@@ -28,6 +28,7 @@ public class Entry {
     private String eTagValue = null;
     private boolean deleted = false;
     private BatchInfo batchInfo = null;
+    private String fields = null;
     
     /**
      * Creates a new empty entry.
@@ -232,16 +233,29 @@ public class Entry {
     }
 
     /**
-     * @param sets the eTag on the entry, used during 
-     *           parsing
+     * @param eTag the eTag on the entry, used during parsing
      */
     public void setETag(String eTag) {
         eTagValue = eTag;
     }
 
     /**
+    * @return the value of the parsed fields attribute 
+    */
+    public String getFields() {
+        return fields;
+    }
+
+    /**
+     * @param fields the fields expression on the entry, used during serialization
+     */
+    public void setFields(String fields) {
+        this.fields = fields;
+    }
+
+    /**
      * Used internally to access batch related properties.
-     * Clients should use {@link BatchUtils} instead.
+     * Clients should use {@link com.google.wireless.gdata2.data.batch.BatchUtils} instead.
      */
     public BatchInfo getBatchInfo() {
         return batchInfo;
@@ -249,7 +263,7 @@ public class Entry {
 
     /**
      * Used internally to update batch related properties.
-     * Clients should use {@link BatchUtils} instead.
+     * Clients should use {@link com.google.wireless.gdata2.data.batch.BatchUtils} instead.
      */
     public void setBatchInfo(BatchInfo batchInfo) {
         this.batchInfo = batchInfo;
