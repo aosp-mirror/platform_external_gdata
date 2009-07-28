@@ -1,3 +1,5 @@
+// Copyright 2009 The Android Open Source Project
+
 package com.google.wireless.gdata2.data;
 
 import com.google.wireless.gdata2.parser.ParseException;
