@@ -290,11 +290,13 @@ public class SimplePullParser {
     }
 
     public ParseException(String message, Throwable cause) {
-      super(message, cause);
+      // constructor Exception(String, Throwable) is not supported in J2ME
+      super(message + ", Cause: " + String.valueOf(cause));
     }
 
     public ParseException(Throwable cause) {
-      super(cause);
+      // constructor Exception(Throwable) is not supported in J2ME
+      super("Cause: " + String.valueOf(cause));
     }
   }
 }
