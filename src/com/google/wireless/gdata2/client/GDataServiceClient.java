@@ -106,7 +106,8 @@ public abstract class GDataServiceClient {
    */
   public GDataParser getParserForFeed(Class feedEntryClass, String feedUrl, String authToken,
       String eTag) throws AuthenticationException, ResourceGoneException,
-      ResourceNotModifiedException, HttpException, ParseException, IOException {
+          ResourceNotModifiedException, HttpException, ParseException, IOException,
+          ForbiddenException {
     try {
       InputStream is = gDataClient.getFeedAsStream(feedUrl, authToken, eTag, getProtocolVersion());
       return gDataParserFactory.createParser(feedEntryClass, is);
@@ -138,8 +139,8 @@ public abstract class GDataServiceClient {
    *         GData service.
    */
   public InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag)
-      throws AuthenticationException, ResourceGoneException, ResourceNotModifiedException,
-      ResourceNotFoundException, HttpException, IOException {
+          throws AuthenticationException, ResourceGoneException, ResourceNotModifiedException,
+          ResourceNotFoundException, HttpException, IOException, ForbiddenException {
     try {
       return gDataClient
           .getMediaEntryAsStream(mediaEntryUrl, authToken, eTag, getProtocolVersion());
@@ -170,16 +171,22 @@ public abstract class GDataServiceClient {
    *         GData service.
    */
   public Entry createEntry(String feedUrl, String authToken, Entry entry)
-      throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
-      HttpException, ParseException, IOException {
+          throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
+          HttpException, ParseException, IOException, ForbiddenException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
     try {
       InputStream is =
           gDataClient.createEntry(feedUrl, authToken, getProtocolVersion(), serializer);
       return parseEntry(entry.getClass(), is);
     } catch (HttpException e) {
-      convertHttpExceptionForWrites(entry.getClass(), "Could not create " + "entry " + feedUrl, e);
-      return null; // never reached.
+        try {
+            convertHttpExceptionForWrites(entry.getClass(),
+                    "Could not create " + "entry " + feedUrl, e);
+        } catch (ResourceNotFoundException e1) {
+            // this should never happen
+            throw e;
+        }
+        return null; // never reached.
     }
   }
 
@@ -204,8 +211,8 @@ public abstract class GDataServiceClient {
    *         GData service.
    */
   public Entry getEntry(Class entryClass, String id, String authToken, String eTag)
-      throws AuthenticationException, ResourceNotFoundException, ResourceNotModifiedException,
-      HttpException, ParseException, IOException {
+          throws AuthenticationException, ResourceNotFoundException, ResourceNotModifiedException,
+          HttpException, ParseException, IOException, ForbiddenException {
     try {
       InputStream is = getGDataClient().getFeedAsStream(id, authToken, eTag, getProtocolVersion());
       return parseEntry(entryClass, is);
@@ -236,8 +243,8 @@ public abstract class GDataServiceClient {
    *         GData service.
    */
   public Entry updateEntry(Entry entry, String authToken) throws AuthenticationException,
-      ConflictDetectedException, PreconditionFailedException, HttpException, ParseException,
-      IOException {
+          ConflictDetectedException, PreconditionFailedException, HttpException, ParseException,
+          IOException, ForbiddenException, ResourceNotFoundException {
     String editUri = entry.getEditUri();
     if (StringUtils.isEmpty(editUri)) {
       throw new ParseException("No edit URI -- cannot update.");
@@ -282,7 +289,8 @@ public abstract class GDataServiceClient {
    */
   public MediaEntry updateMediaEntry(String editUri, InputStream inputStream, String contentType,
       String authToken, String eTag) throws AuthenticationException, ConflictDetectedException,
-      PreconditionFailedException, HttpException, ParseException, IOException {
+          PreconditionFailedException, HttpException, ParseException, IOException,
+          ForbiddenException, ResourceNotFoundException {
     if (StringUtils.isEmpty(editUri)) {
       throw new IllegalArgumentException("No edit URI -- cannot update.");
     }
@@ -317,8 +325,9 @@ public abstract class GDataServiceClient {
    *         GData service.
    */
   public void deleteEntry(String editUri, String authToken, String eTag)
-      throws AuthenticationException, ConflictDetectedException, PreconditionFailedException,
-      HttpException, ParseException, IOException {
+          throws AuthenticationException, ConflictDetectedException, PreconditionFailedException,
+          HttpException, ParseException, IOException, ForbiddenException,
+          ResourceNotFoundException {
     try {
       gDataClient.deleteEntry(editUri, authToken, eTag);
     } catch (HttpException e) {
@@ -359,7 +368,7 @@ public abstract class GDataServiceClient {
    */
   public GDataParser submitBatch(Class feedEntryClass, String batchUrl, String authToken,
       Enumeration entries) throws AuthenticationException, HttpException, ParseException,
-      IOException {
+          IOException, ForbiddenException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entries);
     try {
       InputStream is =
@@ -372,10 +381,11 @@ public abstract class GDataServiceClient {
   }
 
   protected void convertHttpExceptionForFeedReads(String message, HttpException cause)
-      throws AuthenticationException, ResourceGoneException, ResourceNotModifiedException,
-      HttpException {
+          throws AuthenticationException, ResourceGoneException, ResourceNotModifiedException,
+          HttpException, ForbiddenException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_FORBIDDEN:
+          throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
         throw new AuthenticationException(message, cause);
       case HttpException.SC_GONE:
@@ -389,10 +399,11 @@ public abstract class GDataServiceClient {
   }
 
   protected void convertHttpExceptionForEntryReads(String message, HttpException cause)
-      throws AuthenticationException, HttpException, ResourceNotFoundException,
-      ResourceNotModifiedException {
+          throws AuthenticationException, HttpException, ResourceNotFoundException,
+          ResourceNotModifiedException, ForbiddenException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_FORBIDDEN:
+          throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
         throw new AuthenticationException(message, cause);
       case HttpException.SC_NOT_FOUND:
@@ -406,9 +417,10 @@ public abstract class GDataServiceClient {
   }
 
   protected void convertHttpExceptionsForBatches(String message, HttpException cause)
-      throws AuthenticationException, ParseException, HttpException {
+          throws AuthenticationException, ParseException, HttpException, ForbiddenException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_FORBIDDEN:
+          throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
         throw new AuthenticationException(message, cause);
       case HttpException.SC_BAD_REQUEST:
@@ -419,9 +431,11 @@ public abstract class GDataServiceClient {
     }
   }
 
-  protected void convertHttpExceptionForWrites(Class entryClass, String message, HttpException cause)
-      throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
-      ParseException, HttpException, IOException {
+  protected void convertHttpExceptionForWrites(Class entryClass, String message,
+          HttpException cause)
+          throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
+          ParseException, HttpException, IOException, ForbiddenException,
+          ResourceNotFoundException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_CONFLICT:
         Entry entry = null;
@@ -435,10 +449,13 @@ public abstract class GDataServiceClient {
       case HttpException.SC_BAD_REQUEST:
         throw new ParseException(message + ": " + cause);
       case HttpException.SC_FORBIDDEN:
+        throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
         throw new AuthenticationException(message, cause);
       case HttpException.SC_PRECONDITION_FAILED:
         throw new PreconditionFailedException(message, cause);
+      case HttpException.SC_NOT_FOUND:
+        throw new ResourceNotFoundException(message, cause);
       default:
         throw new HttpException(message + ": " + cause.getMessage(), cause.getStatusCode(), cause
             .getResponseStream());
