@@ -43,8 +43,10 @@ public class HttpQueryParams extends QueryParams {
         url.append('&');
       }
       String name = (String) names.elementAt(i);
+      String value = getParamValue(name);
+      if (value == null) continue;
       url.append(client.encodeUri(name)).append('=');
-      url.append(client.encodeUri(getParamValue(name)));
+      url.append(client.encodeUri(value));
     }
     return url.toString();
   }
