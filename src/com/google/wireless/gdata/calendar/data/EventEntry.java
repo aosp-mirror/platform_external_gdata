@@ -70,6 +70,7 @@ public class EventEntry extends Entry {
     private byte visibility = VISIBILITY_DEFAULT;
     private byte transparency = TRANSPARENCY_OPAQUE;
     private Vector attendees = new Vector();
+    private boolean sendEventNotifications = false;
     private Vector whens = new Vector();
     private Vector reminders = null;
     private String originalEventId = null;
@@ -94,6 +95,7 @@ public class EventEntry extends Entry {
         recurrence = null;
         visibility = VISIBILITY_DEFAULT;
         transparency = TRANSPARENCY_OPAQUE;
+	sendEventNotifications = false;
         attendees.removeAllElements();
         whens.removeAllElements();
         reminders = null;
@@ -158,6 +160,14 @@ public class EventEntry extends Entry {
      */
     public void setVisibility(byte visibility) {
         this.visibility = visibility;
+    }
+
+    public boolean getSendEventNotifications() {
+	return sendEventNotifications;
+    }
+
+    public void setSendEventNotifications(boolean sendEventNotifications) {
+	this.sendEventNotifications = sendEventNotifications;
     }
 
     public void clearAttendees() {
@@ -279,6 +289,8 @@ public class EventEntry extends Entry {
         
         appendIfNotNull(sb, "ORIGINAL_EVENT_ID", originalEventId);
         appendIfNotNull(sb, "ORIGINAL_START_TIME", originalEventStartTime);
+
+	sb.append("SEND_EVENT_NOTIFICATIONS: " + (sendEventNotifications ? "true" : "false"));
 
         Enumeration whos = this.attendees.elements();
         while (whos.hasMoreElements()) {
