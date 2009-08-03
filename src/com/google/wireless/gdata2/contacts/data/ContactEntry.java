@@ -59,7 +59,7 @@ public class ContactEntry extends Entry {
   public static final byte TYPE_SENSITIVITY_PERSONAL = 3;
   public static final byte TYPE_SENSITIVITY_PRIVATE = 4;
   private byte sensitivity = TypedElement.TYPE_NONE;
- 
+
   private Name name;
 
   /**
@@ -149,7 +149,7 @@ public class ContactEntry extends Entry {
   public Vector getCalendarLinks() {
       return calendarLinks;
   }
-  
+
   /**
    * Adds a new member to the CalendarLink collection
    */
@@ -163,7 +163,7 @@ public class ContactEntry extends Entry {
   public Vector getEvents() {
       return events;
   }
-  
+
   /**
    * Adds a new member to the Event collection
    */
@@ -171,7 +171,7 @@ public class ContactEntry extends Entry {
     events.addElement(event);
   }
 
- 
+
 
   /**
    * Accessor to the ExternalId Collection
@@ -179,7 +179,7 @@ public class ContactEntry extends Entry {
   public Vector getExternalIds() {
       return externalIds;
   }
-  
+
   /**
    * Adds a new member to the ExternalId collection
    */
@@ -193,7 +193,7 @@ public class ContactEntry extends Entry {
   public Vector getHobbies() {
       return hobbies;
   }
-  
+
   /**
    * Adds a new member to the Hobbies collection
    */
@@ -207,7 +207,7 @@ public class ContactEntry extends Entry {
   public Vector getJots() {
       return jots;
   }
-  
+
   /**
    * Adds a new member to the Jot collection
    */
@@ -221,7 +221,7 @@ public class ContactEntry extends Entry {
   public Vector getLanguages() {
       return languages;
   }
-  
+
   /**
    * Adds a new member to the Language collection
    */
@@ -235,7 +235,7 @@ public class ContactEntry extends Entry {
   public Vector getRelations() {
       return relations;
   }
-  
+
   /**
    * Adds a new member to the Relation collection
    */
@@ -249,7 +249,7 @@ public class ContactEntry extends Entry {
   public Vector getUserDefinedFields() {
       return userDefinedFields;
   }
-  
+
   /**
    * Adds a new member to the UserDefinedField collection
    */
@@ -263,23 +263,23 @@ public class ContactEntry extends Entry {
   public Vector getWebSites() {
       return webSites;
   }
-  
+
   /**
    * Adds a new member to the WebSite collection
    */
   public void addWebSite(WebSite webSite) {
     webSites.addElement(webSite);
   }
-  
+
 
   /**
-  * Directory server associated with the contact 
+  * Directory server associated with the contact
   */
   public String getDirectoryServer() {
       return this.directoryServer;
   }
   /**
-   * Directory server associated with the contact 
+   * Directory server associated with the contact
    */
   public void setDirectoryServer(String directoryServer) {
     this.directoryServer = directoryServer;
@@ -291,7 +291,7 @@ public class ContactEntry extends Entry {
   public String getGender() {
       return this.gender;
   }
-  
+
   /**
    * Gender associated with the contact.
    */
@@ -305,7 +305,7 @@ public class ContactEntry extends Entry {
   public String getInitials() {
       return this.initials;
   }
-  
+
   /**
    * Contact's initials.
    */
@@ -319,7 +319,7 @@ public class ContactEntry extends Entry {
   public String getMaidenName() {
       return this.maidenName;
   }
-  
+
   /**
    * Maiden name associated with the contact.
    */
@@ -333,7 +333,7 @@ public class ContactEntry extends Entry {
   public String getMileage() {
       return this.mileage;
   }
-  
+
   /**
    * Mileage associated with the contact.
    */
@@ -347,7 +347,7 @@ public class ContactEntry extends Entry {
   public String getNickname() {
       return this.nickname;
   }
-  
+
   /**
    * Nickname associated with this Contact
    */
@@ -361,7 +361,7 @@ public class ContactEntry extends Entry {
   public String getOccupation() {
       return this.occupation;
   }
-  
+
   /**
    * Occupation associated with this Contact
    */
@@ -375,25 +375,25 @@ public class ContactEntry extends Entry {
   public byte getPriority() {
       return this.priority;
   }
-  
+
   /**
    * Priority associated with this Contact
    */
-  public void setPriority(byte type) {
+  public void setPriority(byte priority) {
     this.priority = priority;
   }
 
   /**
-   * Specifies contact's sensitivity. Can be either confidential, 
-   * normal, personal or private. 
+   * Specifies contact's sensitivity. Can be either confidential,
+   * normal, personal or private.
    */
   public byte getSensitivity() {
       return this.sensitivity;
   }
-  
+
   /**
-   * Specifies contact's sensitivity. Can be either confidential, 
-   * normal, personal or private. 
+   * Specifies contact's sensitivity. Can be either confidential,
+   * normal, personal or private.
    */
   public void setSensitivity(byte sensitiviy) {
     this.sensitivity = sensitiviy;
@@ -405,7 +405,7 @@ public class ContactEntry extends Entry {
   public String getShortName() {
       return this.shortName;
   }
-  
+
   /**
    * ShortName associated with this Contact
    */
@@ -419,7 +419,7 @@ public class ContactEntry extends Entry {
   public String getSubject() {
       return this.subject;
   }
-  
+
   /**
    * Subject associated with this Contact
    */
@@ -433,7 +433,7 @@ public class ContactEntry extends Entry {
   public Name getName() {
       return this.name;
   }
-  
+
   /**
    * Name associated with this Contact
    */
@@ -447,7 +447,7 @@ public class ContactEntry extends Entry {
   public String getBirthday() {
       return this.birthday;
   }
-  
+
   /**
    * Birthday associated with this Contact
    */
@@ -461,14 +461,14 @@ public class ContactEntry extends Entry {
   public String getBillingInformation() {
       return this.billingInformation;
   }
-  
+
   /**
    * BillingInformation associated with this Contact
    */
   public void setBillingInformation(String billingInformation) {
     this.billingInformation = billingInformation;
   }
- 
+
   /*
   * (non-Javadoc)
   * @see com.google.wireless.gdata2.data.Entry#clear()
@@ -544,9 +544,9 @@ public class ContactEntry extends Entry {
       sb.append(" occupaton:").append(occupation);
     }
     sb.append(" priority:").append(priority);
-    
+
     sb.append(" sensitivity:").append(sensitivity);
- 
+
     if (!StringUtils.isEmpty(shortName)) {
       sb.append(" shortName:").append(shortName);
     }
