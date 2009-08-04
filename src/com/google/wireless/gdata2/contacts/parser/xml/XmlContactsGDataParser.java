@@ -31,10 +31,8 @@ public class XmlContactsGDataParser extends XmlGDataParser {
 
   /** The photo link rels */
   public static final String LINK_REL_PHOTO = "http://schemas.google.com/contacts/2008/rel#photo";
-  public static final String LINK_REL_EDIT_PHOTO =
-          "http://schemas.google.com/contacts/2008/rel#edit-photo";
 
-  /** The phone number type gdata string. */
+    /** The phone number type gdata string. */
   private static final String GD_NAMESPACE = "http://schemas.google.com/g/2005#";
   public static final String TYPESTRING_MOBILE = GD_NAMESPACE + "mobile";
   public static final String TYPESTRING_HOME = GD_NAMESPACE + "home";
@@ -493,7 +491,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     if (LINK_REL_PHOTO.equals(rel)) {
       ContactEntry contactEntry = (ContactEntry) entry;
       XmlPullParser parser = getParser();  
-      String etag = parser.getAttributeValue(null  /* ns */, XmlNametable.ETAG);
+      String etag = parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG);
       contactEntry.setLinkPhoto(href, type, etag);
     } 
   }
