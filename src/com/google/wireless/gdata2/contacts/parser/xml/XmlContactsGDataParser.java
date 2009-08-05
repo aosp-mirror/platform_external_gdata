@@ -85,7 +85,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
   public static final String TYPESTRING_PRIORITY_HIGH = "high";
   public static final String TYPESTRING_PRIORITY_LOW = "low";
   public static final String TYPESTRING_PRIORITY_NORMAL = "normal";
- 
+
   public static final String TYPESTRING_RELATION_ASSISTANT = "assistant";
   public static final String TYPESTRING_RELATION_BROTHER = "brother";
   public static final String TYPESTRING_RELATION_CHILD = "child";
@@ -207,7 +207,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     map.put(IM_PROTOCOL_ICQ, new Byte(ImAddress.PROTOCOL_ICQ));
     map.put(IM_PROTOCOL_JABBER, new Byte(ImAddress.PROTOCOL_JABBER));
     map.put(IM_PROTOCOL_NETMEETING, new Byte(ImAddress.PROTOCOL_NETMEETING));
-  
+
     IM_PROTOCOL_STRING_TO_TYPE_MAP = map;
     IM_PROTOCOL_TYPE_TO_STRING_MAP = swapMap(map);
 
@@ -267,13 +267,13 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     TYPE_TO_REL_RELATION = swapMap(map);
 
     map = new Hashtable();
-    map.put(TYPESTRING_SENSITIVITY_CONFIDENTIAL, 
+    map.put(TYPESTRING_SENSITIVITY_CONFIDENTIAL,
             new Byte(ContactEntry.TYPE_SENSITIVITY_CONFIDENTIAL));
-    map.put(TYPESTRING_SENSITIVITY_NORMAL, 
+    map.put(TYPESTRING_SENSITIVITY_NORMAL,
             new Byte(ContactEntry.TYPE_SENSITIVITY_NORMAL));
-    map.put(TYPESTRING_SENSITIVITY_PERSONAL, 
+    map.put(TYPESTRING_SENSITIVITY_PERSONAL,
             new Byte(ContactEntry.TYPE_SENSITIVITY_PERSONAL));
-    map.put(TYPESTRING_SENSITIVITY_PRIVATE, 
+    map.put(TYPESTRING_SENSITIVITY_PRIVATE,
             new Byte(ContactEntry.TYPE_SENSITIVITY_PRIVATE));
     REL_TO_TYPE_SENSITIVITY= map;
     TYPE_TO_REL_SENSITIVITY = swapMap(map);
@@ -347,9 +347,9 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       if (XmlNametable.GD_EMAIL.equals(name)) {
         EmailAddress emailAddress = new EmailAddress();
         parseContactsElement(emailAddress, parser, REL_TO_TYPE_EMAIL);
-        emailAddress.setDisplayName(parser.getAttributeValue(null /* ns */, 
+        emailAddress.setDisplayName(parser.getAttributeValue(null /* ns */,
                                 XmlNametable.GD_EMAIL_DISPLAYNAME));
-        emailAddress.setAddress(parser.getAttributeValue(null  /* ns */, 
+        emailAddress.setAddress(parser.getAttributeValue(null  /* ns */,
                                 XmlNametable.GD_ADDRESS));
         contactEntry.addEmailAddress(emailAddress);
       } else if (XmlNametable.GD_DELETED.equals(name)) {
@@ -357,11 +357,11 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       } else if (XmlNametable.GD_IM.equals(name)) {
         ImAddress imAddress = new ImAddress();
         parseContactsElement(imAddress, parser, REL_TO_TYPE_IM);
-        imAddress.setAddress(parser.getAttributeValue(null  /* ns */, 
+        imAddress.setAddress(parser.getAttributeValue(null  /* ns */,
                                                      XmlNametable.GD_ADDRESS));
-        imAddress.setLabel(parser.getAttributeValue(null  /* ns */, 
+        imAddress.setLabel(parser.getAttributeValue(null  /* ns */,
                                                     XmlNametable.LABEL));
-        String protocolString = parser.getAttributeValue(null  /* ns */, 
+        String protocolString = parser.getAttributeValue(null  /* ns */,
                                                     XmlNametable.GD_PROTOCOL);
         if (protocolString == null) {
           imAddress.setProtocolPredefined(ImAddress.PROTOCOL_NONE);
@@ -404,13 +404,13 @@ public class XmlContactsGDataParser extends XmlGDataParser {
     } else if (XmlContactsGDataParser.NAMESPACE_CONTACTS_URI.equals(ns)) {
       if (XmlNametable.GC_GMI.equals(name)) {
         GroupMembershipInfo group = new GroupMembershipInfo();
-        group.setGroup(parser.getAttributeValue(null  /* ns */, 
+        group.setGroup(parser.getAttributeValue(null  /* ns */,
                                                 XmlNametable.HREF));
-        group.setDeleted("true".equals(parser.getAttributeValue(null  /* ns */, 
+        group.setDeleted("true".equals(parser.getAttributeValue(null  /* ns */,
                                                 XmlNametable.GD_DELETED)));
         contactEntry.addGroup(group);
       } else if (XmlNametable.GC_BIRTHDAY.equals(name)) {
-        contactEntry.setBirthday(parser.getAttributeValue(null  /* ns */, 
+        contactEntry.setBirthday(parser.getAttributeValue(null  /* ns */,
                                                           XmlNametable.GD_WHEN));
       } else if (XmlNametable.GC_BILLINGINFO.equals(name)) {
         contactEntry.setBillingInformation(XmlUtils.extractChildText(parser));
@@ -424,7 +424,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       } else if ("event".equals(name)) {
         Event event = new Event();
         parseTypedElement(event, parser, REL_TO_TYPE_EVENT);
-        handleEventSubElement(event, parser); 
+        handleEventSubElement(event, parser);
         contactEntry.addEvent(event);
       } else if (XmlNametable.GC_EXTERNALID.equals(name)) {
         ExternalId externalId = new ExternalId();
@@ -490,10 +490,10 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       throws XmlPullParserException, IOException {
     if (LINK_REL_PHOTO.equals(rel)) {
       ContactEntry contactEntry = (ContactEntry) entry;
-      XmlPullParser parser = getParser();  
+      XmlPullParser parser = getParser();
       String etag = parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG);
       contactEntry.setLinkPhoto(href, type, etag);
-    } 
+    }
   }
 
   private static void parseContactsElement(ContactsElement element, XmlPullParser parser,
@@ -547,10 +547,10 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       } else if (XmlNametable.GD_ORG_SYMBOL.equals(tag)) {
         element.setOrgSymbol(XmlUtils.extractChildText(parser));
       } else if (XmlNametable.GD_WHERE.equals(tag)) {
-        String where = parser.getAttributeValue(null  /* ns */, 
+        String where = parser.getAttributeValue(null  /* ns */,
                                                XmlNametable.VALUESTRING);
         element.setWhere(where);
-      } 
+      }
     }
   }
 
@@ -562,7 +562,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       String tag = XmlUtils.nextDirectChildTag(parser, depth);
       if (tag == null) break;
       if (XmlNametable.GD_WHEN.equals(tag)) {
-        String startDate = parser.getAttributeValue(null /* ns */, 
+        String startDate = parser.getAttributeValue(null /* ns */,
                                                     XmlNametable.STARTTIME);
         element.setStartDate(startDate);
       }
@@ -609,6 +609,8 @@ public class XmlContactsGDataParser extends XmlGDataParser {
           element.setPobox(XmlUtils.extractChildText(parser));
         } else if (XmlNametable.GD_SPA_NEIGHBORHOOD.equals(tag)) {
           element.setNeighborhood(XmlUtils.extractChildText(parser));
+        } else if (XmlNametable.GD_SPA_CITY.equals(tag)) {
+          element.setCity(XmlUtils.extractChildText(parser));
         } else if (XmlNametable.GD_SPA_REGION.equals(tag)) {
           element.setRegion(XmlUtils.extractChildText(parser));
         } else if (XmlNametable.GD_SPA_POSTCODE.equals(tag)) {
@@ -620,7 +622,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
         }
       }
     }
-  
+
 
   /**
    * Parse the ExtendedProperty. The parser is assumed to be at the beginning of the tag
