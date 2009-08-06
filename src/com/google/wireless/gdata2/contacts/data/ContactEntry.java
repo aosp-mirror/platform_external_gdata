@@ -489,6 +489,8 @@ public class ContactEntry extends Entry {
     sensitivity = TypedElement.TYPE_NONE;
     shortName = null;
     subject = null;
+    birthday = null;
+    billingInformation = null;
     name = null;
     emailAddresses.removeAllElements();
     imAddresses.removeAllElements();
@@ -514,13 +516,13 @@ public class ContactEntry extends Entry {
     sb.append("\n");
     sb.append("ContactEntry:");
     if (!StringUtils.isEmpty(linkPhotoHref)) {
-      sb.append(" linkPhotoHref:").append(linkPhotoHref).append("\n");
+      sb.append(" linkPhotoHref:").append(linkPhotoHref);
     }
     if (!StringUtils.isEmpty(linkPhotoType)) {
-      sb.append(" linkPhotoType:").append(linkPhotoType).append("\n");
+      sb.append(" linkPhotoType:").append(linkPhotoType);
     }
      if (!StringUtils.isEmpty(linkPhotoEtag)) {
-      sb.append(" linkPhotoEtag:").append(linkPhotoEtag).append("\n");
+      sb.append(" linkPhotoEtag:").append(linkPhotoEtag);
     }
     if (!StringUtils.isEmpty(directoryServer)) {
       sb.append(" directoryServer:").append(directoryServer);
@@ -552,6 +554,17 @@ public class ContactEntry extends Entry {
     }
     if (!StringUtils.isEmpty(subject)) {
       sb.append(" subject:").append(subject);
+    }
+    if (!StringUtils.isEmpty(birthday)) {
+      sb.append(" birthday:").append(birthday);
+    }
+    if (!StringUtils.isEmpty(billingInformation)) {
+      sb.append(" billingInformation:").append(billingInformation);
+    }
+    sb.append("\n");
+    if (name != null) {
+      name.toString(sb);
+      sb.append("\n");
     }
     for (Enumeration iter = emailAddresses.elements();
         iter.hasMoreElements(); ) {

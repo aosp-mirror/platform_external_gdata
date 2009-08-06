@@ -24,6 +24,10 @@ public class Event extends TypedElement {
    * default empty constructor
    */
   public Event() {}
+  public Event(String startDate, byte type, String label) {
+    super(type, label);
+    this.startDate = startDate;
+  }
 
   /**
    * StartDate associated with this event
@@ -40,6 +44,7 @@ public class Event extends TypedElement {
   }
  
   public void toString(StringBuffer sb) {
+    sb.append("Event");
     super.toString(sb);
     sb.append(" date:").append(startDate.toString());
   }

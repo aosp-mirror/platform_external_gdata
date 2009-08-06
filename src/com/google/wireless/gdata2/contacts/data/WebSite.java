@@ -24,6 +24,10 @@ public class WebSite extends ContactsElement {
    * default empty constructor
    */
   public WebSite() {}
+  public WebSite(String href, byte type, String label, boolean isPrimary) {
+    super(type, label, isPrimary);
+    this.href = href;
+  }
 
   /**
    * The URL of the website.

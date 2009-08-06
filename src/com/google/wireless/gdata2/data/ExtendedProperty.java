@@ -12,6 +12,13 @@ public class ExtendedProperty {
   private String value;
   private String xmlBlob;
 
+  public ExtendedProperty() {}
+  public ExtendedProperty(String name, String value, String xmlBlob) {
+      this.name = name;
+      this.value = value;
+      this.xmlBlob = xmlBlob;
+  }
+
   public String getXmlBlob() {
     return xmlBlob;
   }

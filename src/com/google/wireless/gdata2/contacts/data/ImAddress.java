@@ -30,6 +30,13 @@ public class ImAddress extends ContactsElement {
    * default empty constructor
    */
   public ImAddress() {}
+  public ImAddress(String address, byte protocolPredefined, String protocolCustom,
+          byte type, String label, boolean isPrimary) {
+      super(type, label, isPrimary);
+      this.address = address;
+      this.protocolPredefined = protocolPredefined;
+      this.protocolCustom = protocolCustom;
+  }
 
   public byte getProtocolPredefined() {
     return protocolPredefined;

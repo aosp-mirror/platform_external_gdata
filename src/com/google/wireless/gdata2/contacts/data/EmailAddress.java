@@ -17,6 +17,12 @@ public class EmailAddress extends ContactsElement {
    * default empty constructor
    */
   public EmailAddress() {}
+  public EmailAddress(String address, String displayName,
+      byte type, String label, boolean isPrimary) {
+    super(type, label, isPrimary);
+    this.address = address;
+    this.displayName = displayName;
+  }
 
   public String getAddress() {
     return address;

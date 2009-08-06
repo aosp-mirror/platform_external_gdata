@@ -23,7 +23,18 @@ public class Organization extends ContactsElement {
    * default empty constructor
    */
   public Organization() {}
-  
+  public Organization(String name, String nameYomi, String title, String orgDepartment,
+          String orgJobDescription, String orgSymbol, String where,
+        byte type, String label, boolean isPrimary) {
+      super(type, label, isPrimary);
+      this.name = name;
+      this.nameYomi = nameYomi;
+      this.title = title;
+      this.orgDepartment = orgDepartment;
+      this.orgJobDescription = orgJobDescription;
+      this.orgSymbol = orgSymbol;
+      this.where = where;
+  }
  
   public String getName() {
     return name;

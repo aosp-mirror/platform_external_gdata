@@ -33,6 +33,10 @@ public class PhoneNumber extends ContactsElement {
    * default empty constructor
    */
   public PhoneNumber() {}
+  public PhoneNumber(String phoneNumber, byte type, String label, boolean isPrimary) {
+    super(type, label, isPrimary);
+    this.phoneNumber = phoneNumber;
+  }
   
 
   public String getPhoneNumber() {

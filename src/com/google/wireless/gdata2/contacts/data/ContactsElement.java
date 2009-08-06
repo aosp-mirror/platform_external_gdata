@@ -12,6 +12,12 @@ import com.google.wireless.gdata2.parser.ParseException;
 public abstract class ContactsElement extends TypedElement {
   private boolean isPrimary;
 
+  public ContactsElement() {}
+  public ContactsElement(byte type, String label, boolean isPrimary) {
+    super(type, label);
+    this.isPrimary = isPrimary;
+  }
+
   public boolean isPrimary() {
     return isPrimary;
   }

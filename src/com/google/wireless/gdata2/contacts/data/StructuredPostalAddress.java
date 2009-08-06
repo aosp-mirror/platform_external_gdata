@@ -30,7 +30,20 @@ public class StructuredPostalAddress extends ContactsElement {
    * default empty constructor
    */
   public StructuredPostalAddress() {}
- 
+    public StructuredPostalAddress(String street, String pobox, String city, String postcode,
+            String country, String region, String neighborhood, String formattedAddress,
+        byte type, String label, boolean isPrimary) {
+    super(type, label, isPrimary);
+    this.street = street;
+    this.pobox = pobox;
+    this.city = city;
+    this.postcode = postcode;
+    this.country = country;
+    this.region = region;
+    this.neighborhood = neighborhood;
+    this.formattedAddress = formattedAddress;
+  }
+
   /**
    * Getter for street 
    * Can be street, avenue, road, etc. This element also includes 
@@ -188,6 +201,6 @@ public class StructuredPostalAddress extends ContactsElement {
     if (region != null) sb.append(" region:").append(region);
     if (postcode != null) sb.append(" postcode:").append(postcode);
     if (country != null) sb.append(" country:").append(country);
-    if (formattedAddress != null) sb.append(" formatedAddress:").append(formattedAddress);
+    if (formattedAddress != null) sb.append(" formattedAddress:").append(formattedAddress);
   }
 }

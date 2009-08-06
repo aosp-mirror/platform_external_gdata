@@ -15,6 +15,12 @@ public abstract class TypedElement {
 
   private String label;
 
+  public TypedElement() {}
+  public TypedElement(byte type, String label) {
+    this.type = type;
+    this.label = label;
+  }
+
   public byte getType() {
     return type;
   }

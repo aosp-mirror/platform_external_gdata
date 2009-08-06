@@ -34,7 +34,11 @@ public class Relation extends TypedElement {
    * default empty constructor
    */
   public Relation() {}
-  
+  public Relation(String text, byte type, String label) {
+    super(type, label);
+    this.text = text;
+  }
+
  
   
   /**
@@ -53,6 +57,7 @@ public class Relation extends TypedElement {
  
  
    public void toString(StringBuffer sb) {
+    sb.append("Relation");
     super.toString(sb);
     if (!StringUtils.isEmpty(text)) {
       sb.append(" text:").append(text);
