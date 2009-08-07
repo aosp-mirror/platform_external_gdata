@@ -111,6 +111,11 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serialize(serializer, (Event) eachEvent.nextElement());
     }
 
+    Enumeration eachWebsite = entry.getWebSites().elements();
+    while (eachWebsite.hasMoreElements()) {
+      serialize(serializer, (WebSite) eachWebsite.nextElement());
+    }
+
     Enumeration eachExternalId = entry.getExternalIds().elements();
     while (eachExternalId.hasMoreElements()) {
       serialize(serializer, (ExternalId) eachExternalId.nextElement());
@@ -141,6 +146,8 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serialize(serializer, (UserDefinedField) eachUDF.nextElement());
     }
 
+    serializeBirthday(serializer, entry.getBirthday());
+
     // now serialize simple properties
 
     serializeElement(serializer, entry.getDirectoryServer(), XmlNametable.GC_DIRECTORYSERVER);
@@ -152,11 +159,10 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializeElement(serializer, entry.getOccupation(), XmlNametable.GC_OCCUPATION);
     serializeElement(serializer, entry.getShortName(), XmlNametable.GC_SHORTNAME);
     serializeElement(serializer, entry.getSubject(), XmlNametable.GC_SUBJECT);
-    serializeElement(serializer, entry.getBirthday(), XmlNametable.GC_BIRTHDAY);
     serializeElement(serializer, entry.getBillingInformation(), XmlNametable.GC_BILLINGINFO);
-    serializeElement(serializer, entry.getPriority(), 
+    serializeElement(serializer, entry.getPriority(),
                      XmlNametable.GC_PRIORITY, XmlContactsGDataParser.TYPE_TO_REL_PRIORITY);
-    serializeElement(serializer, entry.getSensitivity(), 
+    serializeElement(serializer, entry.getSensitivity(),
                      XmlNametable.GC_SENSITIVITY, XmlContactsGDataParser.TYPE_TO_REL_SENSITIVITY);
 
     serializeName(serializer, entry.getName());
@@ -219,15 +225,15 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializer.startTag(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_ORGANIZATION);
     serializeContactsElement(serializer,
             organization, XmlContactsGDataParser.TYPE_TO_REL_ORGANIZATION);
-    serializeGDSubelement(serializer, organization.getName(), 
+    serializeGDSubelement(serializer, organization.getName(),
                           XmlNametable.GD_ORG_NAME);
-    serializeGDSubelement(serializer, organization.getTitle(), 
+    serializeGDSubelement(serializer, organization.getTitle(),
                           XmlNametable.GD_ORG_TITLE);
-    serializeGDSubelement(serializer, organization.getOrgDepartment(), 
+    serializeGDSubelement(serializer, organization.getOrgDepartment(),
                           XmlNametable.GD_ORG_DEPARTMENT);
-    serializeGDSubelement(serializer, organization.getOrgJobDescription(), 
+    serializeGDSubelement(serializer, organization.getOrgJobDescription(),
                           XmlNametable.GD_ORG_JOBDESC);
-    serializeGDSubelement(serializer, organization.getOrgSymbol(), 
+    serializeGDSubelement(serializer, organization.getOrgSymbol(),
                           XmlNametable.GD_ORG_SYMBOL);
 
     final String where = organization.getWhere();
@@ -242,11 +248,11 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
 
 
   /**
-   * Gets called out of the main serializer loop. Parameters are 
+   * Gets called out of the main serializer loop. Parameters are
    * not null.
-   *  
-   * @param serializer 
-   * @param addr 
+   *
+   * @param serializer
+   * @param addr
    */
   private static void serialize(XmlSerializer serializer, StructuredPostalAddress addr)
       throws IOException, ParseException {
@@ -264,9 +270,9 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_SPA);
   }
 
-  private static void serializeGDSubelement(XmlSerializer serializer, String value, 
-                                            String elementName) 
-      throws IOException, ParseException {
+  private static void serializeGDSubelement(XmlSerializer serializer, String value,
+                                            String elementName)
+      throws IOException {
     if (StringUtils.isEmpty(value)) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_GD_URI, elementName);
     serializer.text(value);
@@ -274,8 +280,8 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   }
 
 
-  private static void serializeTypedElement(XmlSerializer serializer, TypedElement element, 
-                     Hashtable typeToRelMap) throws IOException, ParseException { 
+  private static void serializeTypedElement(XmlSerializer serializer, TypedElement element,
+                     Hashtable typeToRelMap) throws IOException, ParseException {
 
     final String label = element.getLabel();
     byte type = element.getType();
@@ -292,8 +298,8 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     }
   }
 
-  private static void serializeRelation(XmlSerializer serializer, byte type, 
-                     Hashtable typeToRelMap) throws IOException, ParseException { 
+  private static void serializeRelation(XmlSerializer serializer, byte type,
+                     Hashtable typeToRelMap) throws IOException {
 
     serializer.attribute(null /* ns */, XmlNametable.REL,
           (String)typeToRelMap.get(new Byte(type)));
@@ -323,7 +329,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   }
 
   private static void serialize(XmlSerializer serializer, ExtendedProperty extendedProperty)
-      throws IOException, ParseException {
+      throws IOException {
     final String name = extendedProperty.getName();
     final String value = extendedProperty.getValue();
     final String xmlBlob = extendedProperty.getXmlBlob();
@@ -342,20 +348,20 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   }
 
   private static void serializeBlob(XmlSerializer serializer, String blob)
-      throws IOException, ParseException {
+      throws IOException {
      serializer.text(blob);
   }
 
   /**
-   * takes a typed element and a string value and determines if 
-   * the element and the string together should be serialized. 
-   * if the string is non empty, or the typedelement is worthy of 
-   * serialization, this will return true. 
-   * 
-   * @param element 
-   * @param value 
-   * 
-   * @return boolean 
+   * takes a typed element and a string value and determines if
+   * the element and the string together should be serialized.
+   * if the string is non empty, or the typedelement is worthy of
+   * serialization, this will return true.
+   *
+   * @param element
+   * @param value
+   *
+   * @return boolean
    */
   private static boolean shouldSerialize(TypedElement element, String value)
   {
@@ -374,16 +380,16 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   private static void serialize(XmlSerializer serializer, CalendarLink calendarLink)
         throws IOException, ParseException {
     final String href = calendarLink.getHRef();
-   
+
     if (shouldSerialize(calendarLink, href)) {
-      serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, 
+      serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI,
                           XmlNametable.GC_CALENDARLINK);
-      serializeContactsElement(serializer, calendarLink, 
+      serializeContactsElement(serializer, calendarLink,
                                XmlContactsGDataParser.TYPE_TO_REL_CALENDARLINK);
       if (!StringUtils.isEmpty(href)) {
         serializer.attribute(null /* ns */, XmlNametable.HREF, href);
       }
-      serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, 
+      serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI,
                         XmlNametable.GC_CALENDARLINK);
     }
   }
@@ -396,39 +402,47 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serializeTypedElement(serializer, event, XmlContactsGDataParser.TYPE_TO_REL_EVENT);
       if (!StringUtils.isEmpty(startDate)) {
         serializer.startTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_WHEN);
-        serializer.attribute(null /* ns */, XmlNametable.STARTTIME, startDate);  
-        serializer.endTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_WHEN);     
+        serializer.attribute(null /* ns */, XmlNametable.STARTTIME, startDate);
+        serializer.endTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_WHEN);
       }
       serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_EVENT);
     }
   }
-  
+
   private static void serialize(XmlSerializer serializer, ExternalId externalId)
         throws IOException, ParseException {
     final String value = externalId.getValue();
     if (shouldSerialize(externalId, value)) {
-      serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, 
+      serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI,
                           XmlNametable.GC_EXTERNALID);
-      serializeTypedElement(serializer, externalId, 
+      serializeTypedElement(serializer, externalId,
                             XmlContactsGDataParser.TYPE_TO_REL_EXTERNALID);
       if (!StringUtils.isEmpty(value)) {
-        serializer.attribute(null /* ns */, XmlNametable.VALUE, value);  
+        serializer.attribute(null /* ns */, XmlNametable.VALUE, value);
       }
-      serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI,  
+      serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI,
                         XmlNametable.GC_EXTERNALID);
     }
   }
-  
+
   private static void serializeHobby(XmlSerializer serializer, String hobby)
-        throws IOException, ParseException {
+        throws IOException {
     if (StringUtils.isEmptyOrWhitespace(hobby)) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_HOBBY);
     serializer.text(hobby);
     serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_HOBBY);
   }
-  
+
+  private static void serializeBirthday(XmlSerializer serializer, String birthday)
+        throws IOException {
+    if (StringUtils.isEmptyOrWhitespace(birthday)) return;
+    serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_BIRTHDAY);
+    serializer.attribute(null /* ns */, XmlNametable.GD_WHEN, birthday);
+    serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_BIRTHDAY);
+  }
+
   private static void serialize(XmlSerializer serializer, Jot jot)
-        throws IOException, ParseException {
+        throws IOException {
     final String value = jot.getLabel();
 
     if (!StringUtils.isEmptyOrWhitespace(value)) {
@@ -438,20 +452,20 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_JOT);
     }
   }
-  
+
   private static void serialize(XmlSerializer serializer, Language language)
         throws IOException, ParseException {
     language.validate();
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_LANGUAGE);
     final String value = language.getCode();
     if (!StringUtils.isEmptyOrWhitespace(value)) {
-      serializer.attribute(null /* ns */, XmlNametable.CODE, value); 
+      serializer.attribute(null /* ns */, XmlNametable.CODE, value);
     } else {
-      serializer.attribute(null /* ns */, XmlNametable.LABEL, language.getLabel());      
+      serializer.attribute(null /* ns */, XmlNametable.LABEL, language.getLabel());
     }
     serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_LANGUAGE);
   }
-  
+
   private static void serialize(XmlSerializer serializer, Relation relation)
         throws IOException, ParseException {
     final String value = relation.getText();
@@ -462,7 +476,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_RELATION);
     }
   }
-  
+
   private static void serialize(XmlSerializer serializer, UserDefinedField udf)
         throws IOException, ParseException {
     udf.validate();
@@ -471,11 +485,11 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializer.attribute(null /* ns */, XmlNametable.VALUE, udf.getValue());
     serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_UDF);
   }
-  
+
   private static void serialize(XmlSerializer serializer, WebSite webSite)
         throws IOException, ParseException {
     final String href = webSite.getHRef();
-   
+
     if (shouldSerialize(webSite, href)) {
       serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_WEBSITE);
       serializeContactsElement(serializer, webSite, XmlContactsGDataParser.TYPE_TO_REL_WEBSITE);
@@ -485,9 +499,9 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
       serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_WEBSITE);
     }
   }
-  
+
   private static void serializeElement(XmlSerializer serializer, String value, String elementName)
-        throws IOException, ParseException {
+        throws IOException {
     if (StringUtils.isEmpty(value)) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, elementName);
     serializer.text(value);
@@ -495,7 +509,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   }
 
   private static void serializeElement(XmlSerializer serializer, byte value, String elementName,
-        Hashtable typeToRelMap) throws IOException, ParseException {
+        Hashtable typeToRelMap) throws IOException {
     if (value == TypedElement.TYPE_NONE) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, elementName);
     serializeRelation(serializer, value, typeToRelMap);
@@ -503,29 +517,29 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
   }
 
   private static void serializeName(XmlSerializer serializer, Name name)
-        throws IOException, ParseException {
+        throws IOException {
     if (name == null) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_NAME);
-    serializeNameSubelement(serializer, name.getGivenName(), 
+    serializeNameSubelement(serializer, name.getGivenName(),
                             name.getGivenNameYomi(), XmlNametable.GD_NAME_GIVENNAME);
-    serializeNameSubelement(serializer, name.getAdditionalName(), 
+    serializeNameSubelement(serializer, name.getAdditionalName(),
                             name.getAdditionalNameYomi(), XmlNametable.GD_NAME_ADDITIONALNAME);
-    serializeNameSubelement(serializer, name.getFamilyName(), 
+    serializeNameSubelement(serializer, name.getFamilyName(),
                             name.getFamilyNameYomi(), XmlNametable.GD_NAME_FAMILYNAME);
-    serializeNameSubelement(serializer, name.getAdditionalName(), 
+    serializeNameSubelement(serializer, name.getAdditionalName(),
                         name.getAdditionalNameYomi(), XmlNametable.GD_NAME_ADDITIONALNAME);
-    serializeNameSubelement(serializer, name.getNamePrefix(), 
+    serializeNameSubelement(serializer, name.getNamePrefix(),
                         null /* yomi */, XmlNametable.GD_NAME_PREFIX);
-    serializeNameSubelement(serializer, name.getNameSuffix(), 
+    serializeNameSubelement(serializer, name.getNameSuffix(),
                         null /* yomi */, XmlNametable.GD_NAME_SUFFIX);
-    serializeNameSubelement(serializer, name.getFullName(), 
+    serializeNameSubelement(serializer, name.getFullName(),
                         null /* yomi */, XmlNametable.GD_NAME_FULLNAME);
     serializer.endTag(XmlContactsGDataParser.NAMESPACE_GD_URI, XmlNametable.GD_NAME);
   }
 
-  private static void serializeNameSubelement(XmlSerializer serializer, String value, 
-                                              String yomi, String elementName) 
-        throws IOException, ParseException {
+  private static void serializeNameSubelement(XmlSerializer serializer, String value,
+                                              String yomi, String elementName)
+        throws IOException {
     if (StringUtils.isEmpty(value)) return;
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_GD_URI, elementName);
     if (!StringUtils.isEmpty(yomi)) {
