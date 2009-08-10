@@ -65,7 +65,7 @@ public class XmlGDataParser implements GDataParser {
 
     if (!parser.getFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES))
     {
-      throw new IllegalStateException("A XmlGDataParser needs to be " 
+      throw new IllegalStateException("A XmlGDataParser needs to be "
           + "constructed with a namespace aware XmlPullParser");
     }
 
@@ -111,9 +111,9 @@ public class XmlGDataParser implements GDataParser {
            try {
              return parsePartialFeed();
            } catch (XmlPullParserException xppe) {
-             throw new ParseException("Unable to parse <partial> feed start", xppe); 
+             throw new ParseException("Unable to parse <partial> feed start", xppe);
            } catch (IOException ioe) {
-             throw new ParseException("Unable to parse <partial> feed start", ioe); 
+             throw new ParseException("Unable to parse <partial> feed start", ioe);
            }
           } else if (XmlNametable.FEED.equals(name)) {
             try {
@@ -169,9 +169,9 @@ public class XmlGDataParser implements GDataParser {
   }
 
     /**
-   * Parses the partial feed (but not any entries). This requires a 
-   * namespace enabled parser 
-   * 
+   * Parses the partial feed (but not any entries). This requires a
+   * namespace enabled parser
+   *
    * @return A new {@link Feed} containing information about the feed.
    * @throws XmlPullParserException Thrown if the XML document cannot be
    * parsed.
@@ -188,13 +188,13 @@ public class XmlGDataParser implements GDataParser {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           String name = parser.getName();
-          String namespace = parser.getNamespace(); 
+          String namespace = parser.getNamespace();
 
           if (XmlGDataParser.NAMESPACE_ATOM_URI.equals(namespace)) {
             if (XmlNametable.FEED.equals(name)) {
               feed = parseFeed();
             }
-          } 
+          }
         default:
           break;
       }
@@ -206,9 +206,9 @@ public class XmlGDataParser implements GDataParser {
 
 
   /**
-   * Parses the feed (but not any entries). This requires a 
-   * namespace enabled parser 
-   * 
+   * Parses the feed (but not any entries). This requires a
+   * namespace enabled parser
+   *
    * @return A new {@link Feed} containing information about the feed.
    * @throws XmlPullParserException Thrown if the XML document cannot be
    * parsed.
@@ -219,13 +219,13 @@ public class XmlGDataParser implements GDataParser {
     Feed feed = createFeed();
     // parsing <feed>
    feed.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG));
- 
+
     int eventType = parser.next();
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {
         case XmlPullParser.START_TAG:
           String name = parser.getName();
-          String namespace = parser.getNamespace(); 
+          String namespace = parser.getNamespace();
 
           if (XmlGDataParser.NAMESPACE_OPENSEARCH_URI.equals(namespace)) {
             if (XmlNametable.TOTAL_RESULTS.equals(name)) {
@@ -260,7 +260,7 @@ public class XmlGDataParser implements GDataParser {
               // stop parsing here.
               // TODO: pay attention to depth?
               return feed;
-            } 
+            }
           } else {
             handleExtraElementInFeed(feed);
           }
@@ -321,7 +321,7 @@ public class XmlGDataParser implements GDataParser {
     }
 
     String name = parser.getName();
-    // if, in the future, we have a batch feed with partial results, the next element 
+    // if, in the future, we have a batch feed with partial results, the next element
     // can be either an entry or a partial element
 
     if ((!XmlNametable.ENTRY.equals(name) &&
@@ -485,8 +485,8 @@ public class XmlGDataParser implements GDataParser {
 
   /**
    * Parses the current partial start in the XML document. Assumes
-   * that the parser is currently pointing just at the beginning 
-   * of an &lt;partial&gt;. 
+   * that the parser is currently pointing just at the beginning
+   * of an &lt;partial&gt;.
    *
    * @param entry The entry that will be filled.
    * @throws XmlPullParserException Thrown if the XML cannot be parsed.
@@ -501,7 +501,7 @@ public class XmlGDataParser implements GDataParser {
          IllegalStateException("Expected <partial>: Actual element: <"
          + parser.getName() + ">");
     }
-    
+
     fields = parser.getAttributeValue(null /* ns */, XmlNametable.FIELDS);
     // now skip to the next parser event
     parser.next();
@@ -514,7 +514,7 @@ public class XmlGDataParser implements GDataParser {
           if (XmlNametable.ENTRY.equals(name)) {
             handleEntry(entry);
             return;
-          } 
+          }
         default:
           break;
       }
@@ -524,8 +524,8 @@ public class XmlGDataParser implements GDataParser {
 
   /**
    * Parses the current entry in the XML document.  Assumes that the parser
-   * is currently pointing just at the beginning of an 
-   * &lt;entry&gt;. 
+   * is currently pointing just at the beginning of an
+   * &lt;entry&gt;.
    *
    * @param entry The entry that will be filled.
    * @throws XmlPullParserException Thrown if the XML cannot be parsed.
@@ -540,7 +540,7 @@ public class XmlGDataParser implements GDataParser {
          IllegalStateException("Expected <entry>: Actual element: <"
          + parser.getName() + ">");
     }
-          
+
     entry.setETag(parser.getAttributeValue(NAMESPACE_GD_URI, XmlNametable.ETAG));
     entry.setFields(fields);
     // now skip to the next parser event
@@ -555,6 +555,10 @@ public class XmlGDataParser implements GDataParser {
           if (XmlNametable.ENTRY.equals(name)) {
             // stop parsing here.
             return;
+          } else if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
+            // We must check for the BATCH namespace first in case the tag name
+            // is reused in another namespace. e.g. "id".
+            handleBatchInfo(entry);
           } else if (XmlNametable.ID.equals(name)) {
             entry.setId(XmlUtils.extractChildText(parser));
           } else if (XmlNametable.TITLE.equals(name)) {
@@ -602,8 +606,6 @@ public class XmlGDataParser implements GDataParser {
             entry.setUpdateDate(XmlUtils.extractChildText(parser));
           } else if (XmlNametable.DELETED.equals(name)) {
             entry.setDeleted(true);
-          } else if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
-            handleBatchInfo(entry);
           } else {
             handleExtraElementInEntry(entry);
           }
@@ -668,9 +670,9 @@ public class XmlGDataParser implements GDataParser {
       status.setContentType(getAttribute(parser, XmlNametable.CONTENT_TYPE));
       // TODO: Read sub-tree into content.
       skipSubTree();
-    } else if ("id".equals(name)) {
+    } else if (XmlNametable.ID.equals(name)) {
       BatchUtils.setBatchId(entry, XmlUtils.extractChildText(parser));
-    } else if ("operation".equals(name)) {
+    } else if (XmlNametable.OPERATION.equals(name)) {
       BatchUtils.setBatchOperation(entry, getAttribute(parser, XmlNametable.TYPE));
     } else if ("interrupted".equals(name)) {
       BatchInterrupted interrupted = new BatchInterrupted();
