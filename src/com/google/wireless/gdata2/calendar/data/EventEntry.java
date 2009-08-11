@@ -77,6 +77,7 @@ public class EventEntry extends Entry {
     private String where = null;
     private String commentsUri = null;
     private Hashtable extendedProperties = null;
+    private boolean quickAdd = false;
 
     /**
      * Creates a new empty event entry.
@@ -102,6 +103,7 @@ public class EventEntry extends Entry {
         where = null;
         commentsUri = null;
         extendedProperties = null;
+	quickAdd = false;
     }
 
     /**
@@ -270,6 +272,14 @@ public class EventEntry extends Entry {
         this.commentsUri = commentsUri;
     }
 
+    public boolean isQuickAdd() {
+	return quickAdd;
+    }
+
+    public void setQuickAdd(boolean quickAdd) {
+	this.quickAdd = quickAdd;
+    }
+
     public void toString(StringBuffer sb) {
         super.toString(sb);
         sb.append("STATUS: " + status + "\n");
@@ -279,6 +289,8 @@ public class EventEntry extends Entry {
         
         appendIfNotNull(sb, "ORIGINAL_EVENT_ID", originalEventId);
         appendIfNotNull(sb, "ORIGINAL_START_TIME", originalEventStartTime);
+
+	sb.append("QUICK_ADD: " + (quickAdd ? "true" : "false"));
 
         Enumeration whos = this.attendees.elements();
         while (whos.hasMoreElements()) {

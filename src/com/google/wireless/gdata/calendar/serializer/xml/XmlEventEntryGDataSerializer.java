@@ -99,6 +99,8 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
                 serializeExtendedProperty(serializer, propertyName, propertyValue);
             }
         }
+
+	serializeQuickAdd(serializer, entry.isQuickAdd());
     }
 
     private static void serializeEventStatus(XmlSerializer serializer,
@@ -400,5 +402,14 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
         serializer.attribute(null /* ns */, "name", name);
         serializer.attribute(null /* ns */, "value", value);
         serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, "extendedProperty");
+    }
+
+    private static void serializeQuickAdd(XmlSerializer serializer,
+					  boolean quickAdd) throws IOException {
+	if (quickAdd) {
+	    serializer.startTag(NAMESPACE_GCAL, "quickadd");
+	    serializer.attribute(null /* ns */, "value", "true");
+	    serializer.endTag(NAMESPACE_GCAL, "quickadd");
+	}
     }
 }
