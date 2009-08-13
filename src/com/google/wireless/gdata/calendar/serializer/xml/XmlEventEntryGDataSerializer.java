@@ -54,12 +54,12 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
         serializeEventStatus(serializer, entry.getStatus());
         serializeTransparency(serializer, entry.getTransparency());
         serializeVisibility(serializer, entry.getVisibility());
-	if (entry.getSendEventNotifications()) {
-	    serializer.startTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
-	    serializer.attribute(null /* ns */, "value", "true");
-	    serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
-	}
-        Enumeration attendees = entry.getAttendees().elements();
+
+	serializeGuestsCanModify(serializer, entry.getGuestsCanModify());
+	serializeGuestsCanInviteOthers(serializer, entry.getGuestsCanInviteOthers());
+	serializeGuestsCanSeeGuests(serializer, entry.getGuestsCanSeeGuests());
+
+	Enumeration attendees = entry.getAttendees().elements();
         while (attendees.hasMoreElements()) {
             Who attendee = (Who) attendees.nextElement();
             serializeWho(serializer, entry, attendee);
@@ -200,7 +200,39 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
         serializer.endTag(XmlGDataParser.NAMESPACE_GD_URI, "visibility");
     }
 
-    private static void serializeWho(XmlSerializer serializer,
+    private static void serializeSendEventNotifications(XmlSerializer serializer,
+							boolean sendEventNotifications)
+	throws IOException {
+	serializer.startTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+	serializer.attribute(null /* ns */, "value", sendEventNotifications ? "true" : "false");
+	serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+    }
+
+    private static void serializeGuestsCanModify(XmlSerializer serializer,
+						 boolean guestsCanModify)
+	throws IOException {
+	serializer.startTag(NAMESPACE_GCAL_URI, "guestsCanModify");
+	serializer.attribute(null /* ns */, "value", guestsCanModify ? "true" : "false");
+	serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+    }
+
+    private static void serializeGuestsCanInviteOthers(XmlSerializer serializer,
+						       boolean guestsCanInviteOthers)
+	throws IOException {
+	serializer.startTag(NAMESPACE_GCAL_URI, "guestsCanInviteOthers");
+	serializer.attribute(null /* ns */, "value", guestsCanInviteOthers ? "true" : "false");
+	serializer.endTag(NAMESPACE_GCAL_URI, "guestsCanInviteOthers");
+    }
+
+    private static void serializeGuestsCanSeeGuests(XmlSerializer serializer,
+						    boolean guestsCanSeeGuests)
+	throws IOException {
+	serializer.startTag(NAMESPACE_GCAL_URI, "guestsCanSeeGuests");
+	serializer.attribute(null /* ns */, "value", guestsCanSeeGuests ? "true" : "false");
+	serializer.endTag(NAMESPACE_GCAL_URI, "guestsCanSeeGuests");
+    }
+
+   private static void serializeWho(XmlSerializer serializer,
             EventEntry entry,
             Who who)
             throws IOException, ParseException {

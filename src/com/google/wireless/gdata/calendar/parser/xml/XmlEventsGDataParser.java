@@ -155,9 +155,19 @@ public class XmlEventsGDataParser extends XmlGDataParser {
         } else if ("sendEventNotifications".equals(name)) {
 	    // TODO: check that the namespace is gCal
 	    String value = parser.getAttributeValue(null /* ns */, "value");
-	    if ("true".equals(value)) {
-		eventEntry.setSendEventNotifications(true);
-	    }
+	    eventEntry.setSendEventNotifications("true".equals(value));
+	} else if ("guestsCanModify".equals(name)) {
+	    // TODO: check that the namespace is gCal
+	    String value = parser.getAttributeValue(null /* ns */, "value");
+	    eventEntry.setGuestsCanModify("true".equals(value));
+	} else if ("guestsCanInviteOthers".equals(name)) {
+	    // TODO: check that the namespace is gCal
+	    String value = parser.getAttributeValue(null /* ns */, "value");
+	    eventEntry.setGuestsCanInviteOthers("true".equals(value));
+	} else if ("guestsCanSeeGuests".equals(name)) {
+	    // TODO: check that the namespace is gCal
+	    String value = parser.getAttributeValue(null /* ns */, "value");
+	    eventEntry.setGuestsCanSeeGuests("true".equals(value));
 	} else if ("when".equals(name)) {
             handleWhen(eventEntry);
         } else if ("reminder".equals(name)) {

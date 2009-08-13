@@ -71,6 +71,9 @@ public class EventEntry extends Entry {
     private byte transparency = TRANSPARENCY_OPAQUE;
     private Vector attendees = new Vector();
     private boolean sendEventNotifications = false;
+    private boolean guestsCanModify = false;
+    private boolean guestsCanInviteOthers = true;
+    private boolean guestsCanSeeGuests = true;
     private Vector whens = new Vector();
     private Vector reminders = null;
     private String originalEventId = null;
@@ -97,6 +100,9 @@ public class EventEntry extends Entry {
         visibility = VISIBILITY_DEFAULT;
         transparency = TRANSPARENCY_OPAQUE;
 	sendEventNotifications = false;
+	guestsCanModify = false;
+	guestsCanInviteOthers = true;
+	guestsCanSeeGuests = true;
         attendees.removeAllElements();
         whens.removeAllElements();
         reminders = null;
@@ -172,7 +178,31 @@ public class EventEntry extends Entry {
 	this.sendEventNotifications = sendEventNotifications;
     }
 
-    public void clearAttendees() {
+    public boolean getGuestsCanModify() {
+	return guestsCanModify;
+    }
+
+    public void setGuestsCanModify(boolean guestsCanModify) {
+	this.guestsCanModify = guestsCanModify;
+    }
+
+    public boolean getGuestsCanInviteOthers() {
+	return guestsCanInviteOthers;
+    }
+
+    public void setGuestsCanInviteOthers(boolean guestsCanInviteOthers) {
+	this.guestsCanInviteOthers = guestsCanInviteOthers;
+    }
+
+    public boolean getGuestsCanSeeGuests() {
+	return guestsCanSeeGuests;
+    }
+
+    public void setGuestsCanSeeGuests(boolean guestsCanSeeGuests) {
+	this.guestsCanSeeGuests = guestsCanSeeGuests;
+    }
+
+   public void clearAttendees() {
         attendees.clear();
     }
 
@@ -301,6 +331,9 @@ public class EventEntry extends Entry {
         appendIfNotNull(sb, "ORIGINAL_START_TIME", originalEventStartTime);
 	sb.append("QUICK_ADD: " + (quickAdd ? "true" : "false"));
 	sb.append("SEND_EVENT_NOTIFICATIONS: " + (sendEventNotifications ? "true" : "false"));
+	sb.append("GUESTS_CAN_MODIFY: " + (guestsCanModify ? "true" : "false"));
+	sb.append("GUESTS_CAN_INVITE_OTHERS: " + (guestsCanInviteOthers ? "true" : "false"));
+	sb.append("GUESTS_CAN_SEE_GUESTS: " + (guestsCanSeeGuests ? "true" : "false"));
 
         Enumeration whos = this.attendees.elements();
         while (whos.hasMoreElements()) {
