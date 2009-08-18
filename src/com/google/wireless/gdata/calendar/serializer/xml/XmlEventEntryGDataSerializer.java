@@ -213,7 +213,7 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
 	throws IOException {
 	serializer.startTag(NAMESPACE_GCAL_URI, "guestsCanModify");
 	serializer.attribute(null /* ns */, "value", guestsCanModify ? "true" : "false");
-	serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+	serializer.endTag(NAMESPACE_GCAL_URI, "guestsCanModify");
     }
 
     private static void serializeGuestsCanInviteOthers(XmlSerializer serializer,
