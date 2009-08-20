@@ -22,6 +22,7 @@ public final class XmlNametable {
   public static String HREF = "href";
   public static String ETAG = "etag";
   public static String TYPE = "type";
+  public static String SRC = "src";
   public static String TEXT = "text";
   public static String TEXTHTML = "text/html";
   public static String ID = "id";

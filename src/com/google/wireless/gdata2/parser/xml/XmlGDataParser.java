@@ -81,9 +81,9 @@ public class XmlGDataParser implements GDataParser {
 
   /*
   * (non-Javadoc)
-  * @see com.google.wireless.gdata2.parser.GDataParser#init()
+  * @see com.google.wireless.gdata2.parser.GDataParser#parseFeedEnvelope()
   */
-  public final Feed init() throws ParseException {
+  public final Feed parseFeedEnvelope() throws ParseException {
     int eventType;
     fields = null;
     try {
@@ -258,7 +258,6 @@ public class XmlGDataParser implements GDataParser {
               }
             } else if (XmlNametable.ENTRY.equals(name)) {
               // stop parsing here.
-              // TODO: pay attention to depth?
               return feed;
             }
           } else {
@@ -550,12 +549,18 @@ public class XmlGDataParser implements GDataParser {
     while (eventType != XmlPullParser.END_DOCUMENT) {
       switch (eventType) {
         case XmlPullParser.START_TAG:
-          // TODO: make sure these elements are at the expected depth.
           String name = parser.getName();
           if (XmlNametable.ENTRY.equals(name)) {
             // stop parsing here.
             return;
-          } else if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
+          } 
+          // for each start tag, we call our subclasses first. Only do the default 
+          // processing, if they have not done it.
+          if (handleDefaultEntryElements(entry)){
+            break;
+          }
+
+          if (NAMESPACE_BATCH_URI.equals(parser.getNamespace())) {
             // We must check for the BATCH namespace first in case the tag name
             // is reused in another namespace. e.g. "id".
             handleBatchInfo(entry);
@@ -584,8 +589,9 @@ public class XmlGDataParser implements GDataParser {
           } else if (XmlNametable.SUMMARY.equals(name)) {
             entry.setSummary(XmlUtils.extractChildText(parser));
           } else if (XmlNametable.CONTENT.equals(name)) {
-            // TODO: parse the type
             entry.setContent(XmlUtils.extractChildText(parser));
+            entry.setContentType(parser.getAttributeValue(null /* ns */, XmlNametable.TYPE));
+            entry.setContentSource(parser.getAttributeValue(null /* ns */, XmlNametable.SRC));
           } else if (XmlNametable.AUTHOR.equals(name)) {
             handleAuthor(entry);
           } else if (XmlNametable.CATEGORY.equals(name)) {
@@ -720,6 +726,18 @@ public class XmlGDataParser implements GDataParser {
     // no-op in this class.
   }
 
+   /**
+   * Hook that allows a subclass to override default parsing 
+   * behaviour. If the subclass returns true from this call, 
+   * no default parsing will happen for the currently parsed tag 
+   * @param entry The {@link Entry} being filled. 
+   * @return true if the subclass handled the parsing.  
+   */
+  protected boolean handleDefaultEntryElements(Entry entry)
+      throws XmlPullParserException, IOException {
+    // no-op in this class.
+    return false;
+  }
   /**
    * Hook that allows extra (service-specific) &lt;link&gt;s in an entry to be
    * parsed.

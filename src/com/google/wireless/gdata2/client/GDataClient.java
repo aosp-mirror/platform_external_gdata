@@ -84,8 +84,6 @@ public interface GDataClient {
     InputStream getMediaEntryAsStream(String mediaEntryUrl, String authToken, String eTag, String protocolVersion)
         throws HttpException, IOException;
 
-    // TODO: support batch update
-
     /**
      * Connects to a GData server (specified by the feedUrl) and creates a new
      * entry.  The response from the server is returned as an 
