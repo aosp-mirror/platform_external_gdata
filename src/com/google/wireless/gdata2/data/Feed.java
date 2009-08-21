@@ -7,7 +7,6 @@ package com.google.wireless.gdata2.data;
  * not contain any of the entries in that feed -- the entries are yielded
  * separately from this Feed.
  */
-// TODO: add a createEntry method?
 // TODO: comment that setters are only used for parsing code.
 public class Feed {
     private int totalResults;

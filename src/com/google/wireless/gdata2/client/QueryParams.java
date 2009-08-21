@@ -147,16 +147,15 @@ public abstract class QueryParams {
     /**
      * @return the maxResults
      */
-    public String getMaxResults() {
-        return getParamValue(MAX_RESULTS_PARAM);
+    public int getMaxResults() {
+        return Integer.parseInt(getParamValue(MAX_RESULTS_PARAM));
     }
 
-    // TODO: use an int!
     /**
      * @param maxResults the maxResults to set
      */
-    public void setMaxResults(String maxResults) {
-        setParamValue(MAX_RESULTS_PARAM, maxResults);
+    public void setMaxResults(int maxResults) {
+        setParamValue(MAX_RESULTS_PARAM, String.valueOf(maxResults));
     }
 
     /**
@@ -204,15 +203,15 @@ public abstract class QueryParams {
     /**
      * @return the startIndex
      */
-    public String getStartIndex() {
-        return getParamValue(START_INDEX_PARAM);
+    public int getStartIndex() {
+        return Integer.parseInt(getParamValue(START_INDEX_PARAM));
     }
 
     /**
      * @param startIndex the startIndex to set
      */
-    public void setStartIndex(String startIndex) {
-        setParamValue(START_INDEX_PARAM, startIndex);
+    public void setStartIndex(int startIndex) {
+        setParamValue(START_INDEX_PARAM, String.valueOf(startIndex));
     }
 
     /**

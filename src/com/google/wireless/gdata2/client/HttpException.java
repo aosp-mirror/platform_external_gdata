@@ -38,7 +38,6 @@ public class HttpException extends GDataException {
    * Creates an HttpException with the given message, statusCode and
    * responseStream.
    */
-  //TODO: also record response headers?
   public HttpException(String message, int statusCode,
       InputStream responseStream) {
     super(message);

@@ -8,10 +8,8 @@ import com.google.wireless.gdata2.parser.ParseException;
 /**
  * Entry in a GData feed.
  */
-// TODO: make this an interface?
 // allow for writing directly into data structures used by native PIM, etc.,
 // APIs.
-// TODO: comment that setId(), etc., only used for parsing code.
 public class Entry {
     private String id = null;
     private String title = null;
@@ -29,6 +27,8 @@ public class Entry {
     private boolean deleted = false;
     private BatchInfo batchInfo = null;
     private String fields = null;
+    private String contentSource = null;
+    private String contentType = null;
     
     /**
      * Creates a new empty entry.
@@ -46,6 +46,8 @@ public class Entry {
         htmlUri = null;
         summary = null;
         content = null;
+        contentType = null;
+        contentSource = null;
         author = null;
         email = null;
         category = null;
@@ -102,7 +104,7 @@ public class Entry {
      * @return the content
      */
     public String getContent() {
-        return content;
+        return this.content;
     }
 
     /**
@@ -113,13 +115,50 @@ public class Entry {
     }
 
     /**
+     * @return the contents type, either one of the default 
+     * types (text, html, xhtml) or an atomMediaType 
+     */
+    public String getContentType() {
+        return contentType;
+    }
+
+    /**
+     * @param type the contentType to set
+     */
+    public void setContentType(String type) {
+        this.contentType = content;
+    }
+
+    /** 
+     * If the content itself is empty, the src attribute 
+     * points to the internet resource where the content 
+     * can be loaded from 
+     * @return the src attribute of the content element
+     */
+    public String getContentSource() {
+        return contentSource;
+    }
+
+    /**
+     * @param contentSource the url value to set
+     */
+    public void setContentSource(String contentSource) {
+        this.contentSource = contentSource;
+    }
+
+
+
+    /**
      * @return the editUri
      */
     public String getEditUri() {
         return editUri;
     }
 
-    /**
+    /** 
+     * Note that setting the editUri is only valid during parsing 
+     * time, this is a server generated value and can not be changed
+     * by the client normally 
      * @param editUri the editUri to set
      */
     public void setEditUri(String editUri) {
@@ -148,7 +187,10 @@ public class Entry {
         return id;
     }
 
-    /**
+    /** 
+     * Note that setting the ID is only valid during parsing time, 
+     * an ID is a server generated value and can not be changed by 
+     * the client normally 
      * @param id the id to set
      */
     public void setId(String id) {
@@ -162,7 +204,10 @@ public class Entry {
         return publicationDate;
     }
 
-    /**
+    /** 
+     * Note that setting the publicationDate is only valid during 
+     * parsing time, this is a server generated value and can not be 
+     * changed by the client normally 
      * @param publicationDate the publicationDate to set
      */
     public void setPublicationDate(String publicationDate) {
@@ -204,7 +249,10 @@ public class Entry {
         return updateDate;
     }
 
-    /**
+    /** 
+     * Note that setting the updateDate is only valid during parsing
+     * time, this is a server generated value and can not be changed 
+     * by the client normally 
      * @param updateDate the updateDate to set
      */
     public void setUpdateDate(String updateDate) {
@@ -232,8 +280,11 @@ public class Entry {
         return eTagValue;
     }
 
-    /**
-     * @param eTag the eTag on the entry, used during parsing
+    /** 
+     * Note that setting the etag is only valid during parsing
+     * time, this is a server generated value and can not be changed 
+     * by the client normally 
+     * @param eTag the eTag on the entry
      */
     public void setETag(String eTag) {
         eTagValue = eTag;

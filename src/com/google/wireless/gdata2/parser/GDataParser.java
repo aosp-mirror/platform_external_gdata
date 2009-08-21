@@ -22,8 +22,7 @@ public interface GDataParser {
      * @return The {@link Feed} containing information about the parsed feed.
      * @throws ParseException Thrown if the feed cannot be parsed.
      */
-    // TODO: rename to parseFeed?  need to make the API clear.
-    Feed init() throws ParseException;
+    Feed parseFeedEnvelope() throws ParseException;
 
     /**
      * Parses a GData entry.  You can either call {@link #init()} or
