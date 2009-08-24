@@ -589,9 +589,9 @@ public class XmlGDataParser implements GDataParser {
           } else if (XmlNametable.SUMMARY.equals(name)) {
             entry.setSummary(XmlUtils.extractChildText(parser));
           } else if (XmlNametable.CONTENT.equals(name)) {
-            entry.setContent(XmlUtils.extractChildText(parser));
             entry.setContentType(parser.getAttributeValue(null /* ns */, XmlNametable.TYPE));
             entry.setContentSource(parser.getAttributeValue(null /* ns */, XmlNametable.SRC));
+            entry.setContent(XmlUtils.extractChildText(parser));
           } else if (XmlNametable.AUTHOR.equals(name)) {
             handleAuthor(entry);
           } else if (XmlNametable.CATEGORY.equals(name)) {
