@@ -41,6 +41,14 @@ public final class StringUtils {
         return true;
     }
 
+    /** 
+     * Converts a string into an integer. Uses the default value 
+     * passed in if the string can not be converted 
+     * @param string The String that should be converted to an integer
+     * @param defaultValue The default value that should be used if 
+     *        the string is not convertable
+     * @return the integer value of the string or the default value
+     */
     public static int parseInt(String string, int defaultValue) {
         if (string != null) {
             try {
@@ -52,8 +60,15 @@ public final class StringUtils {
         return defaultValue;
     }
 
+    /** 
+     * Tests if a character is a whitespace character 
+     * Uses 
+     * http://en.wikipedia.org/wiki/Whitespace_%28computer_science%29 
+     * as the algorithm. 
+     * @param c A character to be tested. 
+     * @return true if the character is a whitespace 
+	 */
     public static boolean isWhitespace(char c) {
-    // Reference: http://en.wikipedia.org/wiki/Whitespace_%28computer_science%29
         return ('\u0009' <= c && c <= '\r') || c == '\u0020' || c == '\u0085'
             || c == '\u00A0' || c == '\u1680' || c == '\u180E'
             || ('\u2000' <= c && c <= '\u200A') || c == '\u2028' || c == '\u2029'

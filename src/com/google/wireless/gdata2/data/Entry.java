@@ -6,10 +6,16 @@ import com.google.wireless.gdata2.data.batch.BatchInfo;
 import com.google.wireless.gdata2.parser.ParseException;
 
 /**
- * Entry in a GData feed.
+ * Entry in a GData feed. This is the rough equivalent of the atom:Entry
+ * element. The "atom:entry" element represents an individual entry, 
+ * acting as a container for metadata and data associated with the 
+ * entry. This element can appear as a child of the atom:feed element, 
+ * or it can appear as the document (i.e., top-level) element of a 
+ * standalone Atom Entry Document.
+ * The Entry class serves as a base class for Google service specific subclasses,
+ * like a contact or a calendar event. As a base class it takes care of the default 
+ * attributes and elements that are common to all entries.
  */
-// allow for writing directly into data structures used by native PIM, etc.,
-// APIs.
 public class Entry {
     private String id = null;
     private String title = null;

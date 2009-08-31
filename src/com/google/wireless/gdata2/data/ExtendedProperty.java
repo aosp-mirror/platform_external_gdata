@@ -6,6 +6,11 @@ import com.google.wireless.gdata2.parser.ParseException;
 
 /**
  * The extendedProperty gdata type
+ * Allows you to store a limited amount of custom data as an auxiliary
+ * property of the enclosing entity. 
+ * Note that the presence of anyForeignElement allows feed to optionally 
+ * embed any valid XML within gd:extendedProperty element 
+ * (mutually exclusive with value attribute).
  */
 public class ExtendedProperty {
   private String name;
@@ -19,26 +24,54 @@ public class ExtendedProperty {
       this.xmlBlob = xmlBlob;
   }
 
+  /** 
+   * Returns the xml embedded inside the extended property 
+   * element 
+   * Mutually exclusive with the value property 
+   * @return the xml as a string 
+   */  
   public String getXmlBlob() {
     return xmlBlob;
   }
 
+  /** 
+   * Sets the embedded xml for the extended property element. 
+   * Mutually exclusive with the value property
+   * @param xmlBlob xml as a string
+   */
   public void setXmlBlob(String xmlBlob) {
     this.xmlBlob = xmlBlob;
   }
 
+  /**
+   * @return the name of the extended property expressed as a URI. Extended  
+   * property URIs usually follow the {scheme}#{local-name} convention. 
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * @param name set's the name of the extended property
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /** 
+   * Returns the value attribute of the extended property 
+   * element.Mutually exclusive with the xmlBlob property 
+   * @return the value
+   */
   public String getValue() {
     return value;
   }
 
+  /** 
+   * Sets the value attribute of the extended property. Mutually
+   * exclusive with the xmlBlog property 
+   * @param value 
+   */
   public void setValue(String value) {
     this.value = value;
   }

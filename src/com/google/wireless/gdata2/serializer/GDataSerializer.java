@@ -8,13 +8,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Interface for serializing GData entries.
+ * Interface for serializing GData entries. A serializer has to be aware 
+ * what mode it is in while it is serializing.
  */
 public interface GDataSerializer {
 
-    // TODO: I hope the three formats does not bite us.  Each serializer has
-    // to pay attention to what "mode" it is in when serializing.
-    
     /**
      * Serialize all data in the entry.  Used for debugging.
      */
