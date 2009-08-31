@@ -54,12 +54,17 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
         serializeEventStatus(serializer, entry.getStatus());
         serializeTransparency(serializer, entry.getTransparency());
         serializeVisibility(serializer, entry.getVisibility());
+        if (entry.getSendEventNotifications()) {
+            serializer.startTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+            serializer.attribute(null /* ns */, "value", "true");
+            serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
+        }
 
-	serializeGuestsCanModify(serializer, entry.getGuestsCanModify());
-	serializeGuestsCanInviteOthers(serializer, entry.getGuestsCanInviteOthers());
-	serializeGuestsCanSeeGuests(serializer, entry.getGuestsCanSeeGuests());
+        serializeGuestsCanModify(serializer, entry.getGuestsCanModify());
+        serializeGuestsCanInviteOthers(serializer, entry.getGuestsCanInviteOthers());
+        serializeGuestsCanSeeGuests(serializer, entry.getGuestsCanSeeGuests());
 
-	Enumeration attendees = entry.getAttendees().elements();
+        Enumeration attendees = entry.getAttendees().elements();
         while (attendees.hasMoreElements()) {
             Who attendee = (Who) attendees.nextElement();
             serializeWho(serializer, entry, attendee);
