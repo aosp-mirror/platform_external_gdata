@@ -526,8 +526,6 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
                             name.getAdditionalNameYomi(), XmlNametable.GD_NAME_ADDITIONALNAME);
     serializeNameSubelement(serializer, name.getFamilyName(),
                             name.getFamilyNameYomi(), XmlNametable.GD_NAME_FAMILYNAME);
-    serializeNameSubelement(serializer, name.getAdditionalName(),
-                        name.getAdditionalNameYomi(), XmlNametable.GD_NAME_ADDITIONALNAME);
     serializeNameSubelement(serializer, name.getNamePrefix(),
                         null /* yomi */, XmlNametable.GD_NAME_PREFIX);
     serializeNameSubelement(serializer, name.getNameSuffix(),
