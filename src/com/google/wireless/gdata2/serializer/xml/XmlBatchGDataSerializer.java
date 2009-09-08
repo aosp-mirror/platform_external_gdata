@@ -41,6 +41,9 @@ public class XmlBatchGDataSerializer implements GDataSerializer {
     this.batch = batch;
   }
 
+  /* (non-Javadoc)
+  * @see GDataSerializer#getContentType()
+  */
   public String getContentType() {
     return "application/atom+xml";
   }
@@ -53,6 +56,9 @@ public class XmlBatchGDataSerializer implements GDataSerializer {
   }
 
 
+  /* (non-Javadoc)
+   * @see GDataSerializer#serialize()
+   */
   public void serialize(OutputStream out, int format)
       throws IOException, ParseException {
     XmlSerializer serializer;
