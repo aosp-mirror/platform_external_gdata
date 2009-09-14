@@ -635,7 +635,7 @@ public class ContactEntry extends Entry {
     for (Enumeration iter = jots.elements();
         iter.hasMoreElements(); ) {
       sb.append("  ");
-      sb.append ((String) iter.nextElement());
+      sb.append ((Jot) iter.nextElement());
       sb.append("\n");
     }
      for (Enumeration iter = languages.elements();
