@@ -35,6 +35,11 @@ public class CalendarEntry extends Entry {
      * Access level constant indicating the user owns this calendar.
      */
     public static final byte ACCESS_OWNER = 4;
+
+    /**
+     * Access level constant indicating the user is a domain admin.
+     */
+    public static final byte ACCESS_ROOT = 5;
     
     private byte accessLevel = ACCESS_READ;
     // TODO: rename to feed Url?

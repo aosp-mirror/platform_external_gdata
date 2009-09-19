@@ -81,6 +81,8 @@ public class XmlCalendarsGDataParser extends XmlGDataParser {
                 accesslevel = CalendarEntry.ACCESS_EDITOR;
             } else if ("owner".equals(accesslevelStr)) {
                 accesslevel = CalendarEntry.ACCESS_OWNER;
+            } else if ("root".equals(accesslevelStr)) {
+                accesslevel = CalendarEntry.ACCESS_ROOT;
             }
             calendarEntry.setAccessLevel(accesslevel);
         } else if ("color".equals(name)) {
