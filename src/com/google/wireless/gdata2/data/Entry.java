@@ -132,7 +132,7 @@ public class Entry {
      * @param type the contentType to set
      */
     public void setContentType(String type) {
-        this.contentType = content;
+        this.contentType = type;
     }
 
     /** 
