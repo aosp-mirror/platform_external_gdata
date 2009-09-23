@@ -169,10 +169,12 @@ public abstract class GDataServiceClient {
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
    *         GData service.
+   * @throws BadRequestException thrown if the server returns a 400
+   * @throws ForbiddenException thrown if the server returns a 403
    */
   public Entry createEntry(String feedUrl, String authToken, Entry entry)
           throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
-          HttpException, ParseException, IOException, ForbiddenException {
+          HttpException, ParseException, IOException, ForbiddenException, BadRequestException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entry);
     try {
       InputStream is =
@@ -241,10 +243,13 @@ public abstract class GDataServiceClient {
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
    *         GData service.
+   * @throws BadRequestException thrown if the server returns a 400
+   * @throws ForbiddenException thrown if the server returns a 403
+   * @throws ResourceNotFoundException Thrown if the resource was not found.
    */
   public Entry updateEntry(Entry entry, String authToken) throws AuthenticationException,
           ConflictDetectedException, PreconditionFailedException, HttpException, ParseException,
-          IOException, ForbiddenException, ResourceNotFoundException {
+          IOException, ForbiddenException, ResourceNotFoundException, BadRequestException {
     String editUri = entry.getEditUri();
     if (StringUtils.isEmpty(editUri)) {
       throw new ParseException("No edit URI -- cannot update.");
@@ -286,11 +291,14 @@ public abstract class GDataServiceClient {
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
    *         GData service.
+   * @throws BadRequestException thrown if the server returns a 400
+   * @throws ForbiddenException thrown if the server returns a 403
+   * @throws ResourceNotFoundException Thrown if the resource was not found.
    */
   public MediaEntry updateMediaEntry(String editUri, InputStream inputStream, String contentType,
       String authToken, String eTag) throws AuthenticationException, ConflictDetectedException,
           PreconditionFailedException, HttpException, ParseException, IOException,
-          ForbiddenException, ResourceNotFoundException {
+          ForbiddenException, ResourceNotFoundException, BadRequestException {
     if (StringUtils.isEmpty(editUri)) {
       throw new IllegalArgumentException("No edit URI -- cannot update.");
     }
@@ -323,11 +331,14 @@ public abstract class GDataServiceClient {
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
    *         GData service.
+   * @throws BadRequestException thrown if the server returns a 400
+   * @throws ForbiddenException thrown if the server returns a 403
+   * @throws ResourceNotFoundException Thrown if the resource was not found.
    */
   public void deleteEntry(String editUri, String authToken, String eTag)
           throws AuthenticationException, ConflictDetectedException, PreconditionFailedException,
           HttpException, ParseException, IOException, ForbiddenException,
-          ResourceNotFoundException {
+          ResourceNotFoundException, BadRequestException {
     try {
       gDataClient.deleteEntry(editUri, authToken, eTag);
     } catch (HttpException e) {
@@ -365,10 +376,12 @@ public abstract class GDataServiceClient {
    * @throws ParseException Thrown if the server response cannot be parsed.
    * @throws IOException Thrown if an error occurs while communicating with the
    *         GData service.
+   * @throws BadRequestException thrown if the server returns a 400
+   * @throws ForbiddenException thrown if the server returns a 403
    */
   public GDataParser submitBatch(Class feedEntryClass, String batchUrl, String authToken,
       Enumeration entries) throws AuthenticationException, HttpException, ParseException,
-          IOException, ForbiddenException {
+          IOException, ForbiddenException, BadRequestException {
     GDataSerializer serializer = gDataParserFactory.createSerializer(entries);
     try {
       InputStream is =
@@ -417,14 +430,15 @@ public abstract class GDataServiceClient {
   }
 
   protected void convertHttpExceptionsForBatches(String message, HttpException cause)
-          throws AuthenticationException, ParseException, HttpException, ForbiddenException {
+          throws AuthenticationException, ParseException, HttpException, ForbiddenException,
+          BadRequestException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_FORBIDDEN:
           throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
         throw new AuthenticationException(message, cause);
       case HttpException.SC_BAD_REQUEST:
-        throw new ParseException(message + ": " + cause);
+        throw new BadRequestException(message, cause);
       default:
         throw new HttpException(message + ": " + cause.getMessage(), cause.getStatusCode(), cause
             .getResponseStream());
@@ -435,7 +449,7 @@ public abstract class GDataServiceClient {
           HttpException cause)
           throws ConflictDetectedException, AuthenticationException, PreconditionFailedException,
           ParseException, HttpException, IOException, ForbiddenException,
-          ResourceNotFoundException {
+          ResourceNotFoundException, BadRequestException {
     switch (cause.getStatusCode()) {
       case HttpException.SC_CONFLICT:
         Entry entry = null;
@@ -447,7 +461,7 @@ public abstract class GDataServiceClient {
         }
         throw new ConflictDetectedException(entry);
       case HttpException.SC_BAD_REQUEST:
-        throw new ParseException(message + ": " + cause);
+        throw new BadRequestException(message, cause);
       case HttpException.SC_FORBIDDEN:
         throw new ForbiddenException(message, cause);
       case HttpException.SC_UNAUTHORIZED:
