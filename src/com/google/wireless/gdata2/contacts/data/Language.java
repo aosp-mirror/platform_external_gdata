@@ -26,6 +26,14 @@ public class Language {
    */
   public Language() {}
  
+   /**
+   * constructor that allows initialization
+   */
+  public Language(String label, String code) {
+     setLabel(label);
+     setCode(code);
+   }
+
   /**
    * A freeform name of a language. Must not be empty or all 
    * whitespace. 
@@ -70,7 +78,7 @@ public class Language {
 
 
   public void toString(StringBuffer sb) {
-    sb.append("ExternalId");
+    sb.append("Language");
     if (!StringUtils.isEmpty(code)) {
       sb.append(" code:").append(code);
     }    

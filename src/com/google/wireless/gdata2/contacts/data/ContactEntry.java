@@ -49,6 +49,8 @@ public class ContactEntry extends Entry {
   private String birthday;
   private String billingInformation;
 
+  public static final String GENDER_MALE = "male";
+  public static final String GENDER_FEMALE = "female";
   public static final byte TYPE_PRIORITY_HIGH = 1;
   public static final byte TYPE_PRIORITY_NORMAL = 2;
   public static final byte TYPE_PRIORITY_LOW = 3;
@@ -666,6 +668,11 @@ public class ContactEntry extends Entry {
 
   public void validate() throws ParseException {
     super.validate();
+    if (gender != null && !GENDER_FEMALE.equals(gender) && !GENDER_MALE.equals(gender)) {
+      throw new ParseException(
+              String.format("invalid gender \"%s\", must be one of \"%s\" or \"%s\"",
+                      gender, GENDER_FEMALE, GENDER_MALE));
+    }
     for (Enumeration iter = emailAddresses.elements(); iter.hasMoreElements(); ) {
       ((EmailAddress) iter.nextElement()).validate();
     }

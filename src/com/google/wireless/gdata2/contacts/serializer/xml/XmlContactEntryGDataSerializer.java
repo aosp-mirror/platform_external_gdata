@@ -151,7 +151,7 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     // now serialize simple properties
 
     serializeElement(serializer, entry.getDirectoryServer(), XmlNametable.GC_DIRECTORYSERVER);
-    serializeElement(serializer, entry.getGender(), XmlNametable.GC_GENDER);
+    serializeGenderElement(serializer, entry.getGender());
     serializeElement(serializer, entry.getInitials(), XmlNametable.GC_INITIALS);
     serializeElement(serializer, entry.getMaidenName(), XmlNametable.GC_MAIDENNAME);
     serializeElement(serializer, entry.getMileage(), XmlNametable.GC_MILEAGE);
@@ -506,6 +506,14 @@ public class XmlContactEntryGDataSerializer extends XmlEntryGDataSerializer {
     serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, elementName);
     serializer.text(value);
     serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, elementName);
+  }
+
+  private static void serializeGenderElement(XmlSerializer serializer, String value)
+        throws IOException {
+    if (StringUtils.isEmpty(value)) return;
+    serializer.startTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_GENDER);
+    serializer.attribute(null /* ns */, XmlNametable.VALUE, value);
+    serializer.endTag(XmlContactsGDataParser.NAMESPACE_CONTACTS_URI, XmlNametable.GC_GENDER);
   }
 
   private static void serializeElement(XmlSerializer serializer, byte value, String elementName,

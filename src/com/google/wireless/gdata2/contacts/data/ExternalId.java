@@ -26,6 +26,14 @@ public class ExternalId extends TypedElement {
   public ExternalId() {}
 
   /**
+   * constructor that allows initialization
+   */
+  public ExternalId(String value, byte type, String label) {
+    super(type, label);
+    setValue(value);
+  }
+
+  /**
    * The value of this external ID.
    */
   public String getValue() {
@@ -40,10 +48,20 @@ public class ExternalId extends TypedElement {
   }
 
   public void toString(StringBuffer sb) {
+    sb.append("ExternalId");
     super.toString(sb);
     if (!StringUtils.isEmpty(value)) {
       sb.append(" value:").append(value);
    }
+  }
+
+  /**
+   * override default behaviour, an externalId has its own rules for type and label
+   */
+  public void validate() throws ParseException {
+    if (value == null) {
+      throw new ParseException("the value must be set");
+    }
   }
 }
 

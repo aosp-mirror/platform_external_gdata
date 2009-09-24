@@ -15,6 +15,14 @@ public class GroupMembershipInfo {
    */
   public GroupMembershipInfo() {}
 
+  /**
+   * constructor that allows initializing the GroupMembershipInfo
+   */
+  public GroupMembershipInfo(String groupId, boolean deleted) {
+    setGroup(groupId);
+    setDeleted(deleted);
+  }
+
   public String getGroup() {
     return group;
   }

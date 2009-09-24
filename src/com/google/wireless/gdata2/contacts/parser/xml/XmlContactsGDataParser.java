@@ -445,7 +445,7 @@ public class XmlContactsGDataParser extends XmlGDataParser {
       } else if (XmlNametable.GC_LANGUAGE.equals(name)) {
         Language language = new Language();
         language.setCode(parser.getAttributeValue(null /* ns */, XmlNametable.CODE));
-        language.setLabel(parser.getAttributeValue(null /* */, XmlNametable.VALUE));
+        language.setLabel(parser.getAttributeValue(null /* */, XmlNametable.LABEL));
         contactEntry.addLanguage(language);
       } else if (XmlNametable.GC_MAIDENNAME.equals(name)) {
         contactEntry.setMaidenName(XmlUtils.extractChildText(parser));

@@ -14,11 +14,18 @@ public class CalendarLink extends ContactsElement {
   public static final byte TYPE_WORK = 2;
   public static final byte TYPE_FREE_BUSY = 3;
  
-  
   /**
    * default empty constructor
    */
   public CalendarLink() {}
+
+  /**
+   * constructor that allows initialization
+   */
+  public CalendarLink(String href, byte type, String label, boolean isPrimary) {
+    super(type, label, isPrimary);
+    setHRef(href);
+  }
 
   private String href;
 

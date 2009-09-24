@@ -4,6 +4,7 @@
 package com.google.wireless.gdata2.contacts.data;
 
 import com.google.wireless.gdata2.parser.ParseException;
+import com.google.wireless.gdata2.data.StringUtils;
 
 
 /**
@@ -18,14 +19,46 @@ public class Jot extends TypedElement {
   public static final byte TYPE_USER = 4;
   public static final byte TYPE_OTHER = 5;
 
+  private String value;
+
   /**
    * default empty constructor
    */
   public Jot() {}
 
   /**
+   * constructor that allows initialization
+   */
+  public Jot(String value, byte type, String label) {
+    super(type, label);
+    setValue(value);
+  }
+
+  /**
    * override default behaviour, a jot is not relying on either 
    * label or type 
    */
   public void validate() throws ParseException {}
+
+  /**
+   * The value of this Jot
+   */
+  public String getValue() {
+      return this.value;
+  }
+
+  /**
+   * The value of this Jot.
+   */
+  public void setValue(String value) {
+    this.value = value;
+  }
+
+  public void toString(StringBuffer sb) {
+    sb.append("Jot");
+    super.toString(sb);
+    if (!StringUtils.isEmpty(value)) {
+      sb.append(" value:").append(value);
+    }
+  }
 }
