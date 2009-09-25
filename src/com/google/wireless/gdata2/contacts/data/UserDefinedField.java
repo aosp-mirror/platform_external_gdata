@@ -71,7 +71,7 @@ public class UserDefinedField {
 
 
   public void toString(StringBuffer sb) {
-    sb.append("ExternalId");
+    sb.append("UserDefinedField");
     if (!StringUtils.isEmpty(key)) {
       sb.append(" key:").append(key);
     }    
