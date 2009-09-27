@@ -60,9 +60,13 @@ public class XmlEventEntryGDataSerializer extends XmlEntryGDataSerializer {
             serializer.endTag(NAMESPACE_GCAL_URI, "sendEventNotifications");
         }
 
+        // TODO: sending these values can cause server crashes, e.g. if modifying attendee
+        // status while sending guestsCanModify=false
+        /*
         serializeGuestsCanModify(serializer, entry.getGuestsCanModify());
         serializeGuestsCanInviteOthers(serializer, entry.getGuestsCanInviteOthers());
         serializeGuestsCanSeeGuests(serializer, entry.getGuestsCanSeeGuests());
+        */
 
         Enumeration attendees = entry.getAttendees().elements();
         while (attendees.hasMoreElements()) {
