@@ -28,8 +28,7 @@ public class XmlGDataParser implements GDataParser {
   public static final String NAMESPACE_ATOM_URI =
       "http://www.w3.org/2005/Atom";
 
-  public static final String NAMESPACE_OPENSEARCH = "openSearch";
-
+  /** The openSearch namespace Uri */
   public static final String NAMESPACE_OPENSEARCH_URI =
       "http://a9.com/-/spec/opensearch/1.1/";
 
@@ -55,6 +54,7 @@ public class XmlGDataParser implements GDataParser {
   /**
    * Creates a new XmlGDataParser for a feed in the provided InputStream.
    * @param is The InputStream that should be parsed.
+   * @param parser The xmlpullparser to be used
    * @throws ParseException Thrown if an XmlPullParser could not be created
    * or set around this InputStream.
    */
@@ -144,7 +144,7 @@ public class XmlGDataParser implements GDataParser {
   }
 
   /**
-   * Returns the {@link XmlPullParser} being used to parse this feed.
+   * @return the {@link XmlPullParser} being used to parse this feed.
    */
   protected final XmlPullParser getParser() {
     return parser;
@@ -181,7 +181,6 @@ public class XmlGDataParser implements GDataParser {
   private final Feed parsePartialFeed() throws XmlPullParserException, IOException {
     // first thing to do is get the attribute we care about from the partial element
     fields = parser.getAttributeValue(null /* ns */, XmlNametable.FIELDS);
-    Feed feed = null;
 
     int eventType = parser.next();
     while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -192,7 +191,7 @@ public class XmlGDataParser implements GDataParser {
 
           if (XmlGDataParser.NAMESPACE_ATOM_URI.equals(namespace)) {
             if (XmlNametable.FEED.equals(name)) {
-              feed = parseFeed();
+              return parseFeed();
             }
           }
         default:
@@ -200,8 +199,8 @@ public class XmlGDataParser implements GDataParser {
       }
       eventType = parser.next();
     }
-    // if we get here, we have a feed with no entries.
-    return feed;
+    // if we get here, we have no feed
+    return null;
   }
 
 
@@ -276,6 +275,8 @@ public class XmlGDataParser implements GDataParser {
    * Hook that allows extra (service-specific) elements in a &lt;feed&gt; to
    * be parsed.
    * @param feed The {@link Feed} being filled.
+   * @throws XmlPullParserException 
+   * @throws IOException
    */
   protected void handleExtraElementInFeed(Feed feed)
       throws XmlPullParserException, IOException {
@@ -364,7 +365,7 @@ public class XmlGDataParser implements GDataParser {
   }
 
   /**
-   * Parses a GData entry.  You can either call {@link #init()} or
+   * Parses a GData entry.  You can either call {@link #parseFeedEnvelope()} or
    * {@link #parseStandaloneEntry()} for a given feed.
    *
    * @return The parsed entry.
@@ -437,6 +438,8 @@ public class XmlGDataParser implements GDataParser {
   /**
    * Skips the rest of the current entry until the parser reaches the next entry, if any.
    * Does nothing if the parser is already at the beginning of an entry.
+   * @throws IOException
+   * @throws XmlPullParserException
    */
   protected void skipToNextEntry() throws IOException, XmlPullParserException {
     if (!hasMoreData()) {
@@ -461,6 +464,8 @@ public class XmlGDataParser implements GDataParser {
   /**
    * Supply a 'skipSubTree' API which, for some reason, the kxml2 pull parser
    * hasn't implemented.
+   * @throws IOException
+   * @throws XmlPullParserException
    */
   protected void skipSubTree()
       throws XmlPullParserException, IOException {
@@ -490,6 +495,7 @@ public class XmlGDataParser implements GDataParser {
    * @param entry The entry that will be filled.
    * @throws XmlPullParserException Thrown if the XML cannot be parsed.
    * @throws IOException Thrown if the underlying inputstream cannot be read.
+   * @throws ParseException Thrown in the stream can not be parsed into gdata
    */
   protected void handlePartialEntry(Entry entry)
       throws XmlPullParserException, IOException, ParseException {
@@ -529,6 +535,7 @@ public class XmlGDataParser implements GDataParser {
    * @param entry The entry that will be filled.
    * @throws XmlPullParserException Thrown if the XML cannot be parsed.
    * @throws IOException Thrown if the underlying inputstream cannot be read.
+   * @throws ParseException Thrown in the stream can not be parsed into gdata
    */
   protected void handleEntry(Entry entry)
       throws XmlPullParserException, IOException, ParseException {
@@ -720,7 +727,10 @@ public class XmlGDataParser implements GDataParser {
    * Hook that allows extra (service-specific) elements in an &lt;entry&gt;
    * to be parsed.
    * @param entry The {@link Entry} being filled.
-   */
+   * @throws IOException
+   * @throws XmlPullParserException
+   * @throws ParseException Thrown in the stream can not be parsed into gdata
+  */
   protected void handleExtraElementInEntry(Entry entry)
       throws XmlPullParserException, IOException, ParseException {
     // no-op in this class.
@@ -732,7 +742,9 @@ public class XmlGDataParser implements GDataParser {
    * no default parsing will happen for the currently parsed tag 
    * @param entry The {@link Entry} being filled. 
    * @return true if the subclass handled the parsing.  
-   */
+   * @throws IOException
+   * @throws XmlPullParserException
+  */
   protected boolean handleDefaultEntryElements(Entry entry)
       throws XmlPullParserException, IOException {
     // no-op in this class.
@@ -745,7 +757,9 @@ public class XmlGDataParser implements GDataParser {
    * @param type The type attribute value.
    * @param href The href attribute value.
    * @param entry The {@link Entry} being filled.
-   */
+   * @throws IOException
+   * @throws XmlPullParserException
+  */
   protected void handleExtraLinkInEntry(String rel,
       String type,
       String href,
