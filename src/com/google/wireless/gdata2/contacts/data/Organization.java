@@ -4,8 +4,6 @@
 
 package com.google.wireless.gdata2.contacts.data;
 
-import com.google.wireless.gdata2.parser.ParseException;
-
 /** The Organization GData type. */
 public class Organization extends ContactsElement {
   public static final byte TYPE_WORK = 1;
@@ -134,12 +132,4 @@ public class Organization extends ContactsElement {
     if (orgSymbol != null) sb.append(" orgSymbol:").append(orgSymbol);
     if (nameYomi != null) sb.append(" nameYomi:").append(nameYomi);
  }
-
-  public void validate() throws ParseException {
-    super.validate();
-
-    if (name == null && title == null) {
-      throw new ParseException("at least one of name or title must be present");
-    }
-  }
 }
